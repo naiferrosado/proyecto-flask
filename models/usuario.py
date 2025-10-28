@@ -11,7 +11,7 @@ class Usuario(db.Model, UserMixin):
     nombre = db.Column(db.String(50), nullable=False)
     apellido = db.Column(db.String(50), nullable=False)
     correo = db.Column(db.String(100), unique=True, nullable=False)
-    contrasena = db.Column(db.String(100), nullable=False)
+    contrasena = db.Column(db.String(255), nullable=False)
     telefono = db.Column(db.String(15), nullable=False)
     direccion = db.Column(db.String(100), nullable=False)
     fecha_registro = db.Column(db.Date, nullable=False)
