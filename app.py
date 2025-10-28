@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-from extensions import db, migrate
+from extensions import db, migrate, login_manager
 # IMPORTACIÓN DE MODELOS (para migraciones)
 
 from models.usuario import Usuario
@@ -51,6 +51,16 @@ def create_app():
     # INICIALIZACIÓN DE EXTENSIONES
     db.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Por favor inicia sesión para acceder a esta página."
+
+    # Configurar user_loader
+    from models.usuario import Usuario
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return Usuario.query.get(int(user_id))
 
     # =============================================
     # REGISTRO DE BLUEPRINTS
