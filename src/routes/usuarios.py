@@ -3,7 +3,6 @@ from flask_login import login_required, current_user
 from extensions import db
 from models.usuario import Usuario
 from src.forms.form_usuarios import UsuarioForm
-from werkzeug.security import generate_password_hash
 
 usuarios_bp = Blueprint("usuarios", __name__)
 

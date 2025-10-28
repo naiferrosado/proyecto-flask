@@ -12,10 +12,7 @@ objetos_bp = Blueprint("objetos", __name__)
 @objetos_bp.route("/")
 def listar_objetos():
     objetos = Objeto.query.filter_by(estado="Disponible").all()
-    categorias = Categoria.query.all()
-    return render_template(
-        "objetos/listar.html", objetos=objetos, categorias=categorias
-    )
+    return render_template("objetos/listar.html", objetos=objetos)
 
 
 @objetos_bp.route("/nuevo", methods=["GET", "POST"])

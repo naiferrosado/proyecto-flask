@@ -1,9 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Registrarse - Rentflow{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0"><i class="bi bi-person-plus"></i> Crear Cuenta</h4>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.nombre.label(class="form-label") }} {{
+                form.nombre(class="form-control", placeholder="Tu nombre") }} {%
+                if form.nombre.errors %}
+                <div class="text-danger small">
+                  {% for error in form.nombre.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                {{ form.apellido.label(class="form-label") }} {{
+                form.apellido(class="form-control", placeholder="Tu apellido")
+                }} {% if form.apellido.errors %}
+                <div class="text-danger small">
+                  {% for error in form.apellido.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              {{ form.correo.label(class="form-label") }} {{
+              form.correo(class="form-control", placeholder="tu@email.com") }}
+              {% if form.correo.errors %}
+              <div class="text-danger small">
+                {% for error in form.correo.errors %} {{ error }} {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.contrasena.label(class="form-label") }} {{
+                form.contrasena(class="form-control", placeholder="Mínimo 6
+                caracteres") }} {% if form.contrasena.errors %}
+                <div class="text-danger small">
+                  {% for error in form.contrasena.errors %} {{ error }} {%
+                  endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                {{ form.confirmar_contrasena.label(class="form-label") }} {{
+                form.confirmar_contrasena(class="form-control",
+                placeholder="Repite tu contraseña") }} {% if
+                form.confirmar_contrasena.errors %}
+                <div class="text-danger small">
+                  {% for error in form.confirmar_contrasena.errors %} {{ error
+                  }} {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.telefono.label(class="form-label") }} {{
+                form.telefono(class="form-control", placeholder="809-123-4567")
+                }} {% if form.telefono.errors %}
+                <div class="text-danger small">
+                  {% for error in form.telefono.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                {{ form.direccion.label(class="form-label") }} {{
+                form.direccion(class="form-control", placeholder="Tu dirección")
+                }} {% if form.direccion.errors %}
+                <div class="text-danger small">
+                  {% for error in form.direccion.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-grid">
+              {{ form.submit(class="btn btn-success btn-lg") }}
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <p class="mb-0">
+              ¿Ya tienes cuenta?
+              <a
+                href="{{ url_for('auth.login') }}"
+                class="text-decoration-none"
+              >
+                Inicia sesión aquí
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
