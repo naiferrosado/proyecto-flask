@@ -11,6 +11,10 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 migrate.init_app(app, db)
 
+app.config["SECRET_KEY"] = (
+    "559f897f7fd39579e84d499305476df7ba8ba8eea89312b282685056b4b8c22b"
+)
+
 from models.usuario import Usuario
 from models.rol import Rol
 from models.reserva import Reserva
