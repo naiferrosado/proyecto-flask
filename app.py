@@ -1,22 +1,24 @@
 from flask import Flask
-from extensions import db, migrate  # Importamos desde extensions
-from models import usuario, rol, reserva, pago, opinion, objeto, incidencia, categoria
+from extensions import db, migrate
 
 app = Flask(__name__)
 
-USER_DB = "postgres"
-USER_PASSWORD = "postgres"
-SERVER_DB = "localhost"
-NAME_DB = "Rentflow"
-FULL_URL_DB = f"postgresql://{USER_DB}:{USER_PASSWORD}@{SERVER_DB}/{NAME_DB}"
-
-app.config["SQLALCHEMY_DATABASE_URI"] = FULL_URL_DB
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql+psycopg2://postgres:postgres@localhost/Rentflow"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Inicializamos las extensiones con la app
 db.init_app(app)
 migrate.init_app(app, db)
 
+from models.usuario import Usuario
+from models.rol import Rol
+from models.reserva import Reserva
+from models.pago import Pago
+from models.opinion import Opinion
+from models.objeto import Objeto
+from models.incidencia import Incidencia
+from models.categoria import Categoria
 
 if __name__ == "__main__":
     app.run(debug=True)
