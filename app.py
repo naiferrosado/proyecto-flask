@@ -2,6 +2,16 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 from extensions import db, migrate
+# IMPORTACIÓN DE MODELOS (para migraciones)
+
+from models.usuario import Usuario
+from models.rol import Rol
+from models.reserva import Reserva
+from models.pago import Pago
+from models.opinion import Opinion
+from models.objeto import Objeto
+from models.incidencia import Incidencia
+from models.categoria import Categoria
 
 # Cargar variables de entorno
 load_dotenv()
@@ -85,17 +95,6 @@ def register_error_handlers(app):
     def internal_error(error):
         return {"error": "Error interno del servidor"}, 500
 
-
-# IMPORTACIÓN DE MODELOS (para migraciones)
-
-from models.usuario import Usuario
-from models.rol import Rol
-from models.reserva import Reserva
-from models.pago import Pago
-from models.opinion import Opinion
-from models.objeto import Objeto
-from models.incidencia import Incidencia
-from models.categoria import Categoria
 
 if __name__ == "__main__":
     app = create_app()
