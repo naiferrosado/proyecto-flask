@@ -13,7 +13,8 @@ Perfiles de usuario con reputación y calificaciones
 
 Panel de administración para moderación
 
-🛍️ Gestión de Objetos
+# 🛍️ Gestión de Objetos
+
 Publicación de objetos para alquiler
 
 Búsqueda avanzada con filtros por categoría, precio y ubicación
@@ -22,21 +23,24 @@ Galería de imágenes para cada objeto
 
 Sistema de estados: Disponible, Reservado, No disponible
 
-📅 Sistema de Reservas
+# 📅 Sistema de Reservas
+
 Calendario de disponibilidad para cada objeto
 
 Gestión de reservas con estados: Pendiente, Confirmada, Cancelada, Finalizada
 
 Cálculo automático de costos basado en días de alquiler
 
-💰 Pagos y Reputación
+# 💰 Pagos y Reputación
+
 Sistema de pagos integrado (simulado)
 
 Sistema de opiniones y calificaciones (1-5 estrellas)
 
 Reputación de usuarios basada en transacciones
 
-🛠️ Administración
+# 🛠️ Administración
+
 Gestión de usuarios y verificación
 
 Moderación de contenido (objetos, opiniones)
@@ -45,8 +49,10 @@ Gestión de categorías
 
 Resolución de incidencias
 
-🛠️ Tecnologías Utilizadas
-Backend
+# 🛠️ Tecnologías Utilizadas
+
+# Backend
+
 Python 3.8+ con Flask framework
 
 Flask-SQLAlchemy para ORM de base de datos
@@ -59,7 +65,8 @@ Flask-WTF para formularios seguros
 
 PostgreSQL como base de datos principal
 
-Frontend
+# Frontend
+
 Bootstrap 5.1.3 para diseño responsive
 
 Bootstrap Icons para iconografía
@@ -75,7 +82,7 @@ Render/Railway para despliegue
 
 Python-dotenv para variables de entorno
 
-📦 Instalación y Configuración
+# 📦 Instalación y Configuración
 
 Prerrequisitos
 
@@ -140,7 +147,7 @@ flask run
 
 La aplicación estará disponible en http://localhost:5000
 
-👤 Roles del Sistema
+# 👤 Roles del Sistema
 
 # Usuario Regular
 
@@ -164,35 +171,7 @@ Gestión de categorías
 
 Resolución de incidencias
 
-🗃️ Estructura del Proyecto
-
-rentflow/
-├── app.py # Punto de entrada de la aplicación
-├── extensions.py # Extensiones de Flask
-├── requirements.txt # Dependencias del proyecto
-├── .env # Variables de entorno
-├── config/ # Configuraciones
-│ └── settings.py
-├── models/ # Modelos de base de datos
-│ ├── usuario.py
-│ ├── objeto.py
-│ ├── reserva.py
-│ └── ...
-├── src/ # Lógica de la aplicación
-│ ├── routes/ # Blueprints y rutas
-│ └── forms/ # Formularios Flask-WTF
-├── templates/ # Plantillas HTML
-│ ├── base.html
-│ ├── auth/
-│ ├── objetos/
-│ └── ...
-├── static/ # Archivos estáticos
-│ ├── css/
-│ ├── js/
-│ └── images/
-└── migrations/ # Migraciones de base de datos
-
-🌟 Funcionalidades Futuras
+# 🌟 Funcionalidades Futuras
 
 Integración con APIs de pago reales
 
@@ -208,8 +187,8 @@ Análisis de datos y reportes
 
 Sistema de seguros para objetos
 
-👥 Autores
+# 👥 Autores
 
-Naifer Alberto Rosado Pérez - Desarrollo backend y base de datos
+Naifer A. Rosado
 
-Ricardo Peña Garcia - Desarrollo frontend y diseño
+Ricardo Peña Garcia
