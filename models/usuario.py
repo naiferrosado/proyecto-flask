@@ -1,4 +1,3 @@
-# models/usuario.py
 from extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,11 +10,13 @@ class Usuario(db.Model, UserMixin):
     nombre = db.Column(db.String(50), nullable=False)
     apellido = db.Column(db.String(50), nullable=False)
     correo = db.Column(db.String(100), unique=True, nullable=False)
-    contrasena = db.Column(db.String(255), nullable=False)
+    contrasena = db.Column(db.String(255), nullable=False)  # Aumentado a 255
     telefono = db.Column(db.String(15), nullable=False)
     direccion = db.Column(db.String(100), nullable=False)
     fecha_registro = db.Column(db.Date, nullable=False)
-    id_rol = db.Column(db.Integer, db.ForeignKey("rol.id_rol"), nullable=False)
+    id_rol = db.Column(
+        db.Integer, db.ForeignKey("rol.id_rol"), nullable=False, default=2
+    )  # Default a Usuario
 
     objetos = db.relationship("Objeto", backref="usuario", lazy=True)
     reservas = db.relationship("Reserva", backref="usuario", lazy=True)
@@ -31,3 +32,6 @@ class Usuario(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.contrasena, password)
+
+    def __repr__(self):
+        return f"<Usuario {self.nombre} {self.apellido}>"

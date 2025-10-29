@@ -9,3 +9,6 @@ class Rol(db.Model):
     descripcion = db.Column(db.String(100))
 
     usuarios = db.relationship("Usuario", backref="rol", lazy=True)
+
+    def __repr__(self):
+        return f"<Rol {self.nombre}>"

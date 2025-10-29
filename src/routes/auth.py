@@ -28,6 +28,7 @@ def login():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
+
     if form.validate_on_submit():
         # Verificar si el correo ya existe
         existing_user = Usuario.query.filter_by(correo=form.correo.data).first()
@@ -35,7 +36,7 @@ def register():
             flash("Este correo ya está registrado", "error")
             return render_template("auth/register.html", form=form)
 
-        # Crear nuevo usuario (rol 2 = Cliente por defecto)
+        # Crear nuevo usuario con rol de Usuario (id_rol=2)
         user = Usuario(
             nombre=form.nombre.data,
             apellido=form.apellido.data,
@@ -43,14 +44,17 @@ def register():
             telefono=form.telefono.data,
             direccion=form.direccion.data,
             fecha_registro=date.today(),
-            id_rol=2,  # Rol de Cliente
+            id_rol=2,  # Rol de Usuario por defecto
         )
         user.set_password(form.contrasena.data)
 
         db.session.add(user)
         db.session.commit()
 
-        flash("¡Registro exitoso! Ahora puedes iniciar sesión.", "success")
+        flash(
+            "¡Registro exitoso! Ahora puedes publicar objetos y realizar reservas.",
+            "success",
+        )
         return redirect(url_for("auth.login"))
 
     return render_template("auth/register.html", form=form)

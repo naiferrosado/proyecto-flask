@@ -130,4 +130,5 @@ class RegistrationForm(FlaskForm):
             ),
         ],
     )
+    # ELIMINAR el campo id_rol - se asignará automáticamente
     submit = SubmitField("Registrarse")
