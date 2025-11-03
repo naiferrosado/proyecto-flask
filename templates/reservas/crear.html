@@ -48,25 +48,27 @@ Rentflow{% endblock %} {% block content %}
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                {{ form.fecha_inicio.label(class="form-label") }} {{
-                form.fecha_inicio(class="form-control", type="date") }} {% if
-                form.fecha_inicio.errors %}
-                <div class="text-danger small">
-                  {% for error in form.fecha_inicio.errors %} {{ error }} {%
-                  endfor %}
-                </div>
-                {% endif %}
+                <label for="fecha_inicio" class="form-label"
+                  >Fecha de inicio</label
+                >
+                <input
+                  type="date"
+                  class="form-control"
+                  id="fecha_inicio"
+                  name="fecha_inicio"
+                  required
+                />
               </div>
 
               <div class="col-md-6 mb-3">
-                {{ form.fecha_fin.label(class="form-label") }} {{
-                form.fecha_fin(class="form-control", type="date") }} {% if
-                form.fecha_fin.errors %}
-                <div class="text-danger small">
-                  {% for error in form.fecha_fin.errors %} {{ error }} {% endfor
-                  %}
-                </div>
-                {% endif %}
+                <label for="fecha_fin" class="form-label">Fecha de fin</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="fecha_fin"
+                  name="fecha_fin"
+                  required
+                />
               </div>
             </div>
 
@@ -140,22 +142,36 @@ Rentflow{% endblock %} {% block content %}
 <!-- Script para calcular costos -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-      const fechaInicio = document.getElementById('{{ form.fecha_inicio.id }}');
-      const fechaFin = document.getElementById('{{ form.fecha_fin.id }}');
+      const fechaInicio = document.getElementById('fecha_inicio');
+      const fechaFin = document.getElementById('fecha_fin');
       const diasAlquiler = document.getElementById('diasAlquiler');
       const totalPagar = document.getElementById('totalPagar');
       const precioDia = {{ objeto.precio }};
+
+      // Establecer fecha mínima como hoy
+      const today = new Date().toISOString().split('T')[0];
+      fechaInicio.min = today;
+      fechaFin.min = today;
 
       function calcularCostos() {
           if (fechaInicio.value && fechaFin.value) {
               const inicio = new Date(fechaInicio.value);
               const fin = new Date(fechaFin.value);
+
+              // Validar que fecha fin sea mayor que fecha inicio
+              if (fin <= inicio) {
+                  diasAlquiler.textContent = 'Fechas inválidas';
+                  totalPagar.textContent = 'RD$ 0.00';
+                  return;
+              }
+
               const diffTime = fin - inicio;
               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
               if (diffDays > 0) {
                   diasAlquiler.textContent = diffDays + ' días';
-                  totalPagar.textContent = 'RD$ ' + (precioDia * diffDays).toFixed(2);
+                  const total = (precioDia * diffDays).toFixed(2);
+                  totalPagar.textContent = 'RD$ ' + total;
               } else {
                   diasAlquiler.textContent = '0 días';
                   totalPagar.textContent = 'RD$ 0.00';
@@ -163,7 +179,13 @@ Rentflow{% endblock %} {% block content %}
           }
       }
 
-      fechaInicio.addEventListener('change', calcularCostos);
+      fechaInicio.addEventListener('change', function() {
+          if (fechaInicio.value) {
+              fechaFin.min = fechaInicio.value;
+          }
+          calcularCostos();
+      });
+
       fechaFin.addEventListener('change', calcularCostos);
   });
 </script>
