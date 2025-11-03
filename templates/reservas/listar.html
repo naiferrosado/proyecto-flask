@@ -1,9 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Mis Reservas - Rentflow{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2"><i class="bi bi-calendar-check"></i> Mis Reservas</h1>
+    <a
+      href="{{ url_for('objetos.listar_objetos') }}"
+      class="btn btn-outline-primary"
+    >
+      <i class="bi bi-search"></i> Buscar Objetos
+    </a>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-md-3">
+          <select class="form-select">
+            <option selected>Todas las reservas</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="confirmada">Confirmadas</option>
+            <option value="cancelada">Canceladas</option>
+            <option value="finalizada">Finalizadas</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <input type="date" class="form-control" placeholder="Fecha desde" />
+        </div>
+        <div class="col-md-3">
+          <input type="date" class="form-control" placeholder="Fecha hasta" />
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Reservas -->
+  {% if reservas %}
+  <div class="row">
+    {% for reserva in reservas %}
+    <div class="col-12 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-2">
+              <img
+                src="{{ reserva.objeto.imagen or '/static/images/default-object.jpg' }}"
+                class="rounded img-fluid"
+                style="height: 80px; object-fit: cover"
+              />
+            </div>
+            <div class="col-md-4">
+              <h6 class="mb-1">{{ reserva.objeto.nombre }}</h6>
+              <p class="text-muted small mb-1">
+                <i class="bi bi-person"></i> {{ reserva.objeto.usuario.nombre }}
+              </p>
+              <p class="text-muted small mb-0">
+                <i class="bi bi-geo-alt"></i> {{
+                reserva.objeto.usuario.direccion }}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <small class="text-muted d-block">Período</small>
+                <strong
+                  >{{ reserva.fecha_inicio.strftime('%d/%m') }} - {{
+                  reserva.fecha_fin.strftime('%d/%m/%Y') }}</strong
+                >
+                <br />
+                <small class="text-muted">
+                  {{ ((reserva.fecha_fin - reserva.fecha_inicio).days) }} días
+                </small>
+              </div>
+            </div>
+            <div class="col-md-2 text-center">
+              <span
+                class="badge bg-{{ 
+                                'warning' if reserva.estado == 'Pendiente' 
+                                else 'success' if reserva.estado == 'Confirmada'
+                                else 'secondary' if reserva.estado == 'Finalizada'
+                                else 'danger'
+                            }} fs-6"
+              >
+                {{ reserva.estado }}
+              </span>
+              <br />
+              <small class="text-muted"
+                >RD$ {{ "%.2f"|format(reserva.objeto.precio * (reserva.fecha_fin
+                - reserva.fecha_inicio).days) }}</small
+              >
+            </div>
+            <div class="col-md-1 text-end">
+              <div class="dropdown">
+                <button
+                  class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                >
+                  <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      <i class="bi bi-eye"></i> Ver Detalles
+                    </a>
+                  </li>
+                  {% if reserva.estado == 'Pendiente' %}
+                  <li>
+                    <a
+                      class="dropdown-item text-danger"
+                      href="{{ url_for('reservas.cancelar_reserva', id=reserva.id_reserva) }}"
+                    >
+                      <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                  </li>
+                  {% endif %} {% if reserva.estado == 'Confirmada' and not
+                  reserva.pago %}
+                  <li>
+                    <a
+                      class="dropdown-item text-success"
+                      href="{{ url_for('pagos.procesar_pago', id_reserva=reserva.id_reserva) }}"
+                    >
+                      <i class="bi bi-credit-card"></i> Pagar
+                    </a>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Estado vacío -->
+  <div class="text-center py-5">
+    <i class="bi bi-calendar-x display-1 text-muted"></i>
+    <h3 class="text-muted mt-3">No tienes reservas</h3>
+    <p class="text-muted">
+      Explora los objetos disponibles y realiza tu primera reserva
+    </p>
+    <a
+      href="{{ url_for('objetos.listar_objetos') }}"
+      class="btn btn-primary mt-3"
+    >
+      <i class="bi bi-search"></i> Explorar Objetos
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
