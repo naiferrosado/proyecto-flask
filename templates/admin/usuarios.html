@@ -1,0 +1,242 @@
+{% extends "base.html" %} {% block title %}Gestionar Usuarios - Rentflow{%
+endblock %} {% block content %}
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2"><i class="bi bi-people"></i> Gestión de Usuarios</h1>
+    <div class="text-muted">Total: {{ usuarios.total }} usuarios</div>
+  </div>
+
+  <!-- Filtros y Búsqueda -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre, email..."
+            id="searchInput"
+          />
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" id="roleFilter">
+            <option value="">Todos los roles</option>
+            <option value="1">Administradores</option>
+            <option value="2">Usuarios</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" id="statusFilter">
+            <option value="">Todos los estados</option>
+            <option value="activo">Activos</option>
+            <option value="suspendido">Suspendidos</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" onclick="filtrarUsuarios()">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Usuarios -->
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Usuario</th>
+              <th>Contacto</th>
+              <th>Rol</th>
+              <th>Registro</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for usuario in usuarios.items %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-person-circle me-3 fs-4"></i>
+                  <div>
+                    <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+                    <br />
+                    <small class="text-muted"
+                      >ID: {{ usuario.id_usuario }}</small
+                    >
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>
+                  <small>{{ usuario.correo }}</small>
+                  <br />
+                  <small class="text-muted">{{ usuario.telefono }}</small>
+                </div>
+              </td>
+              <td>
+                <span
+                  class="badge bg-{{ 'danger' if usuario.id_rol == 1 else 'primary' }}"
+                >
+                  {% if usuario.id_rol == 1 %}Administrador{% else %}Usuario{%
+                  endif %}
+                </span>
+              </td>
+              <td>
+                <small>{{ usuario.fecha_registro.strftime('%d/%m/%Y') }}</small>
+              </td>
+              <td>
+                <span class="badge bg-success">
+                  <i class="bi bi-check-circle"></i> Activo
+                </span>
+              </td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <button
+                    class="btn btn-outline-primary"
+                    data-bs-toggle="tooltip"
+                    title="Ver perfil"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-warning"
+                    data-bs-toggle="tooltip"
+                    title="Editar usuario"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  {% if usuario.id_rol != 1 %}
+                  <button
+                    class="btn btn-outline-danger"
+                    data-bs-toggle="tooltip"
+                    title="Suspender usuario"
+                    onclick="suspenderUsuario({{ usuario.id_usuario }})"
+                  >
+                    <i class="bi bi-person-x"></i>
+                  </button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  {% if usuarios.pages > 1 %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if usuarios.has_prev %}
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="{{ url_for('admin.usuarios', page=usuarios.prev_num) }}"
+          >Anterior</a
+        >
+      </li>
+      {% endif %} {% for page_num in usuarios.iter_pages() %} {% if page_num %}
+      <li class="page-item {% if page_num == usuarios.page %}active{% endif %}">
+        <a
+          class="page-link"
+          href="{{ url_for('admin.usuarios', page=page_num) }}"
+          >{{ page_num }}</a
+        >
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      {% endif %} {% endfor %} {% if usuarios.has_next %}
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="{{ url_for('admin.usuarios', page=usuarios.next_num) }}"
+          >Siguiente</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+
+<!-- Modal para suspender usuario -->
+<div class="modal fade" id="suspenderModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Suspender Usuario</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres suspender a este usuario?</p>
+        <p class="text-muted small">
+          El usuario no podrá acceder a la plataforma hasta que sea reactivado.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" id="confirmarSuspension">
+          Suspender
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let usuarioASuspender = null;
+
+  function filtrarUsuarios() {
+    const search = document.getElementById("searchInput").value;
+    const role = document.getElementById("roleFilter").value;
+    const status = document.getElementById("statusFilter").value;
+
+    // Aquí iría la lógica para filtrar
+    console.log("Filtrando:", { search, role, status });
+  }
+
+  function suspenderUsuario(usuarioId) {
+    usuarioASuspender = usuarioId;
+    const modal = new bootstrap.Modal(
+      document.getElementById("suspenderModal")
+    );
+    modal.show();
+  }
+
+  document
+    .getElementById("confirmarSuspension")
+    .addEventListener("click", function () {
+      if (usuarioASuspender) {
+        // Aquí iría la llamada AJAX para suspender al usuario
+        console.log("Suspendiendo usuario:", usuarioASuspender);
+        alert("Usuario suspendido correctamente");
+        bootstrap.Modal.getInstance(
+          document.getElementById("suspenderModal")
+        ).hide();
+      }
+    });
+
+  // Inicializar tooltips
+  document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>
+{% endblock %}
