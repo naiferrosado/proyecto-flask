@@ -1,9 +1,170 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Reservar {{ objeto.nombre }} -
+Rentflow{% endblock %} {% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-calendar-check"></i> Confirmar Reserva
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <!-- Resumen del Objeto -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-3">
+                  <img
+                    src="{{ objeto.imagen or '/static/images/default-object.jpg' }}"
+                    class="rounded img-fluid"
+                    style="height: 100px; object-fit: cover"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <h5 class="mb-1">{{ objeto.nombre }}</h5>
+                  <p class="text-muted mb-1">{{ objeto.categoria.nombre }}</p>
+                  <p class="text-muted mb-0">
+                    <i class="bi bi-person"></i> {{ objeto.usuario.nombre }}
+                  </p>
+                </div>
+                <div class="col-md-3 text-end">
+                  <span class="h4 text-primary"
+                    >RD$ {{ "%.2f"|format(objeto.precio) }}</span
+                  >
+                  <span class="text-muted">/día</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <!-- Fechas de Reserva -->
+            <h5 class="mb-3 text-primary">
+              <i class="bi bi-calendar-range"></i> Seleccionar Fechas
+            </h5>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.fecha_inicio.label(class="form-label") }} {{
+                form.fecha_inicio(class="form-control", type="date") }} {% if
+                form.fecha_inicio.errors %}
+                <div class="text-danger small">
+                  {% for error in form.fecha_inicio.errors %} {{ error }} {%
+                  endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                {{ form.fecha_fin.label(class="form-label") }} {{
+                form.fecha_fin(class="form-control", type="date") }} {% if
+                form.fecha_fin.errors %}
+                <div class="text-danger small">
+                  {% for error in form.fecha_fin.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Resumen de Costos -->
+            <div class="card bg-light mb-4">
+              <div class="card-body">
+                <h6 class="card-title">Resumen de Costos</h6>
+                <div class="row">
+                  <div class="col-6">
+                    <small class="text-muted">Precio por día:</small>
+                  </div>
+                  <div class="col-6 text-end">
+                    <small>RD$ {{ "%.2f"|format(objeto.precio) }}</small>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6">
+                    <small class="text-muted">Días de alquiler:</small>
+                  </div>
+                  <div class="col-6 text-end">
+                    <small id="diasAlquiler">0 días</small>
+                  </div>
+                </div>
+                <hr />
+                <div class="row">
+                  <div class="col-6">
+                    <strong>Total a pagar:</strong>
+                  </div>
+                  <div class="col-6 text-end">
+                    <strong id="totalPagar" class="text-success"
+                      >RD$ 0.00</strong
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Términos y Condiciones -->
+            <div class="form-check mb-4">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="terminos"
+                required
+              />
+              <label class="form-check-label" for="terminos">
+                Acepto los <a href="#">términos y condiciones</a> de alquiler y
+                me comprometo a devolver el objeto en las mismas condiciones.
+              </label>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a
+                href="{{ url_for('objetos.detalle_objeto', id=objeto.id_objeto) }}"
+                class="btn btn-outline-secondary me-md-2"
+              >
+                <i class="bi bi-arrow-left"></i> Volver
+              </a>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle"></i> Confirmar Reserva
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para calcular costos -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const fechaInicio = document.getElementById('{{ form.fecha_inicio.id }}');
+      const fechaFin = document.getElementById('{{ form.fecha_fin.id }}');
+      const diasAlquiler = document.getElementById('diasAlquiler');
+      const totalPagar = document.getElementById('totalPagar');
+      const precioDia = {{ objeto.precio }};
+
+      function calcularCostos() {
+          if (fechaInicio.value && fechaFin.value) {
+              const inicio = new Date(fechaInicio.value);
+              const fin = new Date(fechaFin.value);
+              const diffTime = fin - inicio;
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              if (diffDays > 0) {
+                  diasAlquiler.textContent = diffDays + ' días';
+                  totalPagar.textContent = 'RD$ ' + (precioDia * diffDays).toFixed(2);
+              } else {
+                  diasAlquiler.textContent = '0 días';
+                  totalPagar.textContent = 'RD$ 0.00';
+              }
+          }
+      }
+
+      fechaInicio.addEventListener('change', calcularCostos);
+      fechaFin.addEventListener('change', calcularCostos);
+  });
+</script>
+{% endblock %}
