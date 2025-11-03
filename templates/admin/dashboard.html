@@ -1,0 +1,274 @@
+{% extends "base.html" %} {% block title %}Panel de Administración - Rentflow{%
+endblock %} {% block content %}
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+      <i class="bi bi-speedometer2"></i> Panel de Administración
+    </h1>
+    <div class="text-muted">
+      <i class="bi bi-person-circle"></i> {{ current_user.nombre }} {{
+      current_user.apellido }}
+    </div>
+  </div>
+
+  <!-- Estadísticas Rápidas -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start border-primary border-4 shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div
+                class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+              >
+                Usuarios Registrados
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ stats.total_usuarios }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-people fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start border-success border-4 shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div
+                class="text-xs font-weight-bold text-success text-uppercase mb-1"
+              >
+                Objetos Activos
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ stats.total_objetos }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-grid fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start border-warning border-4 shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div
+                class="text-xs font-weight-bold text-warning text-uppercase mb-1"
+              >
+                Reservas Activas
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ stats.total_reservas }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-calendar-check fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start border-danger border-4 shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div
+                class="text-xs font-weight-bold text-danger text-uppercase mb-1"
+              >
+                Incidencias Pendientes
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ stats.incidencias_pendientes }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-exclamation-triangle fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Menú de Administración -->
+    <div class="col-lg-3 mb-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0">
+            <i class="bi bi-menu-button"></i> Menú de Administración
+          </h6>
+        </div>
+        <div class="list-group list-group-flush">
+          <a
+            href="{{ url_for('admin.usuarios') }}"
+            class="list-group-item list-group-item-action"
+          >
+            <i class="bi bi-people me-2"></i> Gestión de Usuarios
+          </a>
+          <a
+            href="{{ url_for('admin.objetos') }}"
+            class="list-group-item list-group-item-action"
+          >
+            <i class="bi bi-grid me-2"></i> Moderación de Objetos
+          </a>
+          <a
+            href="{{ url_for('admin.categorias') }}"
+            class="list-group-item list-group-item-action"
+          >
+            <i class="bi bi-tags me-2"></i> Gestión de Categorías
+          </a>
+          <a
+            href="{{ url_for('admin.incidencias') }}"
+            class="list-group-item list-group-item-action"
+          >
+            <i class="bi bi-exclamation-triangle me-2"></i> Incidencias {% if
+            stats.incidencias_pendientes > 0 %}
+            <span class="badge bg-danger float-end"
+              >{{ stats.incidencias_pendientes }}</span
+            >
+            {% endif %}
+          </a>
+          <a
+            href="{{ url_for('admin.reportes') }}"
+            class="list-group-item list-group-item-action"
+          >
+            <i class="bi bi-graph-up me-2"></i> Reportes y Estadísticas
+          </a>
+          <a
+            href="{{ url_for('admin.configuracion') }}"
+            class="list-group-item list-group-item-action"
+          >
+            <i class="bi bi-gear me-2"></i> Configuración
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="col-lg-9">
+      <!-- Actividad Reciente -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="bi bi-clock-history"></i> Actividad Reciente
+          </h6>
+        </div>
+        <div class="card-body">
+          {% if actividad_reciente %}
+          <div class="list-group list-group-flush">
+            {% for actividad in actividad_reciente %}
+            <div
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <small class="text-muted"
+                  >{{ actividad.fecha.strftime('%d/%m/%Y %H:%M') }}</small
+                >
+                <br />
+                <span class="small">{{ actividad.descripcion }}</span>
+              </div>
+              <span class="badge bg-{{ actividad.tipo }}"
+                >{{ actividad.tipo|title }}</span
+              >
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted text-center py-3">No hay actividad reciente</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Usuarios Recientes -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="bi bi-person-plus"></i> Usuarios Recientes
+              </h6>
+            </div>
+            <div class="card-body">
+              {% if usuarios_recientes %}
+              <div class="list-group list-group-flush">
+                {% for usuario in usuarios_recientes %}
+                <div
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+                    <br />
+                    <small class="text-muted">{{ usuario.correo }}</small>
+                  </div>
+                  <small class="text-muted"
+                    >{{ usuario.fecha_registro.strftime('%d/%m') }}</small
+                  >
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <p class="text-muted text-center py-3">
+                No hay usuarios recientes
+              </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Objetos Recientes -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="bi bi-plus-circle"></i> Objetos Recientes
+              </h6>
+            </div>
+            <div class="card-body">
+              {% if objetos_recientes %}
+              <div class="list-group list-group-flush">
+                {% for objeto in objetos_recientes %}
+                <div
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <strong>{{ objeto.nombre }}</strong>
+                    <br />
+                    <small class="text-muted"
+                      >RD$ {{ "%.2f"|format(objeto.precio) }}</small
+                    >
+                  </div>
+                  <span
+                    class="badge bg-{{ 'success' if objeto.estado == 'Disponible' else 'warning' }}"
+                  >
+                    {{ objeto.estado }}
+                  </span>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <p class="text-muted text-center py-3">
+                No hay objetos recientes
+              </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
