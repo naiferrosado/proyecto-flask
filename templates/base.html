@@ -53,122 +53,123 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <div class="navbar-nav ms-auto">
             {% if current_user.is_authenticated %}
-  <!-- Menú para usuarios autenticados -->
-  <a class="nav-link" href="{{ url_for('objetos.listar_objetos') }}">
-    <i class="bi bi-search"></i> Explorar Objetos
-  </a>
-  <a class="nav-link" href="{{ url_for('objetos.crear_objeto') }}">
-    <i class="bi bi-plus-circle"></i> Publicar Objeto
-  </a>
-  <a class="nav-link" href="{{ url_for('reservas.listar_reservas') }}">
-    <i class="bi bi-calendar-check"></i> Mis Reservas
-  </a>
+            <!-- Menú para usuarios autenticados -->
+            <a class="nav-link" href="{{ url_for('objetos.listar_objetos') }}">
+              <i class="bi bi-search"></i> Explorar Objetos
+            </a>
+            <a class="nav-link" href="{{ url_for('objetos.crear_objeto') }}">
+              <i class="bi bi-plus-circle"></i> Publicar Objeto
+            </a>
+            <a
+              class="nav-link"
+              href="{{ url_for('reservas.listar_reservas') }}"
+            >
+              <i class="bi bi-calendar-check"></i> Mis Reservas
+            </a>
 
-  <!-- 🔧 Menú de administrador (solo si es admin) -->
-  {% if current_user.id_rol == 1 %}
-  <div class="nav-item dropdown">
-    <a
-      class="nav-link dropdown-toggle"
-      href="#"
-      id="adminDropdown"
-      role="button"
-      data-bs-toggle="dropdown"
-      aria-expanded="false"
-    >
-      <i class="bi bi-shield-lock"></i> Administración
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-      <li class="dropdown-header text-muted small">
-        <i class="bi bi-tools"></i> Panel de Control
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('admin.usuarios') }}">
-          <i class="bi bi-people"></i> Gestionar Usuarios
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('admin.gestion_categorias') }}">
-          <i class="bi bi-tags"></i> Gestionar Categorías
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('admin.gestion_objetos') }}">
-          <i class="bi bi-box-seam"></i> Gestionar Objetos
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('admin.gestion_reservas') }}">
-          <i class="bi bi-calendar-check"></i> Gestionar Reservas
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('admin.gestion_incidencias') }}">
-          <i class="bi bi-exclamation-octagon"></i> Gestionar Incidencias
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('admin.reportes') }}">
-          <i class="bi bi-bar-chart"></i> Reportes y Estadísticas
-        </a>
-      </li>
-      <li><hr class="dropdown-divider" /></li>
-      <li>
-        <a class="dropdown-item text-danger" href="{{ url_for('admin.panel') }}">
-          <i class="bi bi-speedometer2"></i> Ir al Panel de Administración
-        </a>
-      </li>
-    </ul>
-  </div>
-  {% endif %}
+            <!-- Menú de administrador (solo si es admin) -->
+            {% if current_user.id_rol == 1 %}
+            <div class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="bi bi-gear"></i> Administrar
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Usuarios</a></li>
+                <li><a class="dropdown-item" href="#">Categorías</a></li>
+                <li><a class="dropdown-item" href="#">Reportes</a></li>
+              </ul>
+            </div>
+            {% endif %}
 
-  <!-- 👤 Menú de usuario -->
-  <div class="nav-item dropdown">
-    <a
-      class="nav-link dropdown-toggle"
-      href="#"
-      role="button"
-      data-bs-toggle="dropdown"
-    >
-      <i class="bi bi-person-circle"></i> {{ current_user.nombre }}
-    </a>
-    <ul class="dropdown-menu">
-      <li>
-        <a class="dropdown-item" href="{{ url_for('usuarios.perfil') }}">
-          <i class="bi bi-person"></i> Mi Perfil
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('objetos.crear_objeto') }}">
-          <i class="bi bi-plus-circle"></i> Publicar Objeto
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('reservas.listar_reservas') }}">
-          <i class="bi bi-calendar-check"></i> Mis Reservas
-        </a>
-      </li>
-      <li><hr class="dropdown-divider" /></li>
-      <li>
-        <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
-          <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-        </a>
-      </li>
-    </ul>
-  </div>
+            <!-- Menú de usuario -->
+            <div class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="bi bi-person-circle"></i> {{ current_user.nombre }}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{{ url_for('usuarios.perfil') }}"
+                  >
+                    <i class="bi bi-person"></i> Mi Perfil
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{{ url_for('objetos.crear_objeto') }}"
+                  >
+                    <i class="bi bi-plus-circle"></i> Publicar Objeto
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{{ url_for('reservas.listar_reservas') }}"
+                  >
+                    <i class="bi bi-calendar-check"></i> Mis Reservas
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a
+                    class="dropdown-item text-danger"
+                    href="{{ url_for('auth.logout') }}"
+                  >
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                  </a>
+                </li>
+              </ul>
+            </div>
+            {% else %}
+            <!-- Menú para usuarios no autenticados -->
+            <a class="nav-link" href="{{ url_for('objetos.listar_objetos') }}">
+              <i class="bi bi-search"></i> Explorar
+            </a>
+            <a class="nav-link" href="{{ url_for('auth.login') }}">
+              <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+            <a class="nav-link" href="{{ url_for('auth.register') }}">
+              <i class="bi bi-person-plus"></i> Registrarse
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
 
-{% else %}
-  <!-- Menú para usuarios no autenticados -->
-  <a class="nav-link" href="{{ url_for('objetos.listar_objetos') }}">
-    <i class="bi bi-search"></i> Explorar
-  </a>
-  <a class="nav-link" href="{{ url_for('auth.login') }}">
-    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-  </a>
-  <a class="nav-link" href="{{ url_for('auth.register') }}">
-    <i class="bi bi-person-plus"></i> Registrarse
-  </a>
-{% endif %}
-
+    <!-- Mensajes Flash -->
+    <div class="container mt-3">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show"
+      >
+        <div class="d-flex align-items-center">
+          <i
+            class="bi bi-{{ 'exclamation-triangle-fill' if category == 'error' else 'check-circle-fill' }} me-2"
+          ></i>
+          <span>{{ message }}</span>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
 
     <!-- Contenido Principal -->
     <main>{% block content %}{% endblock %}</main>
