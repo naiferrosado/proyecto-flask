@@ -1,9 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Dejar Opinión - Rentflow{% endblock
+%} {% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+          <h4 class="mb-0">
+            <i class="bi bi-chat-square-text"></i> Dejar Tu Opinión
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <p class="text-muted mb-4">
+            Comparte tu experiencia con este objeto. Tu opinión ayuda a otros
+            usuarios a tomar mejores decisiones.
+          </p>
+
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <!-- Calificación -->
+            <div class="mb-4 text-center">
+              <label class="form-label d-block mb-3">
+                <strong>¿Cómo calificarías este objeto?</strong>
+              </label>
+              <div class="rating-stars mb-3" style="font-size: 2rem">
+                {% for i in range(1, 6) %}
+                <span
+                  class="star"
+                  data-rating="{{ i }}"
+                  style="cursor: pointer; color: #ddd"
+                >
+                  <i class="bi bi-star"></i>
+                </span>
+                {% endfor %}
+              </div>
+              {{ form.calificacion(class="d-none") }} {% if
+              form.calificacion.errors %}
+              <div class="text-danger small">
+                {% for error in form.calificacion.errors %} {{ error }} {%
+                endfor %}
+              </div>
+              {% endif %}
+              <div id="rating-text" class="text-muted small">
+                Selecciona una calificación
+              </div>
+            </div>
+
+            <!-- Comentario -->
+            <div class="mb-4">
+              {{ form.comentario.label(class="form-label") }} {{
+              form.comentario(class="form-control", rows="5",
+              placeholder="Comparte tu experiencia... ¿El objeto estaba en buen
+              estado? ¿El propietario fue amable? ¿Recomendarías este objeto?")
+              }}
+              <div class="form-text">
+                Tu comentario será visible para todos los usuarios.
+              </div>
+              {% if form.comentario.errors %}
+              <div class="text-danger small">
+                {% for error in form.comentario.errors %} {{ error }} {% endfor
+                %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Consejos -->
+            <div class="alert alert-info">
+              <h6>
+                <i class="bi bi-lightbulb"></i> Consejos para una buena opinión:
+              </h6>
+              <ul class="mb-0 small">
+                <li>Sé específico sobre la condición del objeto</li>
+                <li>Menciona la puntualidad y comunicación del propietario</li>
+                <li>Destaca aspectos positivos y áreas de mejora</li>
+                <li>Mantén un tono respetuoso y constructivo</li>
+              </ul>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a
+                href="{{ url_for('objetos.detalle_objeto', id=id_objeto) }}"
+                class="btn btn-outline-secondary me-md-2"
+              >
+                <i class="bi bi-arrow-left"></i> Cancelar
+              </a>
+              <button type="submit" class="btn btn-warning btn-lg">
+                <i class="bi bi-send"></i> Publicar Opinión
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para el sistema de estrellas -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const stars = document.querySelectorAll(".star");
+    const ratingInput = document.getElementById("{{ form.calificacion.id }}");
+    const ratingText = document.getElementById("rating-text");
+
+    const ratingTexts = {
+      1: "Muy malo - No cumplió expectativas",
+      2: "Malo - Podría mejorar",
+      3: "Regular - Cumplió lo básico",
+      4: "Bueno - Superó expectativas",
+      5: "Excelente - Excepcional",
+    };
+
+    stars.forEach((star) => {
+      star.addEventListener("click", function () {
+        const rating = this.getAttribute("data-rating");
+        ratingInput.value = rating;
+
+        // Actualizar estrellas visualmente
+        stars.forEach((s) => {
+          const starRating = s.getAttribute("data-rating");
+          if (starRating <= rating) {
+            s.innerHTML = '<i class="bi bi-star-fill"></i>';
+            s.style.color = "#ffc107";
+          } else {
+            s.innerHTML = '<i class="bi bi-star"></i>';
+            s.style.color = "#ddd";
+          }
+        });
+
+        // Actualizar texto
+        ratingText.textContent = ratingTexts[rating];
+        ratingText.className =
+          "small " +
+          (rating >= 4
+            ? "text-success"
+            : rating >= 3
+            ? "text-warning"
+            : "text-danger");
+      });
+
+      // Efecto hover
+      star.addEventListener("mouseenter", function () {
+        const hoverRating = this.getAttribute("data-rating");
+        stars.forEach((s) => {
+          const starRating = s.getAttribute("data-rating");
+          if (starRating <= hoverRating) {
+            s.style.color = "#ffc107";
+          }
+        });
+      });
+
+      star.addEventListener("mouseleave", function () {
+        const currentRating = ratingInput.value;
+        stars.forEach((s) => {
+          const starRating = s.getAttribute("data-rating");
+          if (!currentRating || starRating > currentRating) {
+            s.style.color = "#ddd";
+          }
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}
