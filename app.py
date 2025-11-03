@@ -78,6 +78,7 @@ def create_app():
 def register_blueprints(app):
     """Registrar todos los blueprints de la aplicación"""
     from src.routes.main import main_bp
+    from src.routes.admin import admin_bp
     from src.routes.auth import auth_bp
     from src.routes.usuarios import usuarios_bp
     from src.routes.objetos import objetos_bp
@@ -87,6 +88,7 @@ def register_blueprints(app):
     from src.routes.incidencias import incidencias_bp
 
     app.register_blueprint(main_bp)
+    app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(usuarios_bp, url_prefix="/usuarios")
     app.register_blueprint(objetos_bp, url_prefix="/objetos")
