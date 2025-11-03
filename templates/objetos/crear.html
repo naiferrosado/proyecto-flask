@@ -44,8 +44,7 @@
             <div class="mb-3">
               {{ form.descripcion.label(class="form-label") }} {{
               form.descripcion(class="form-control", rows="4",
-              placeholder="Describe tu objeto, incluye características
-              importantes, estado, accesorios incluidos...") }}
+              placeholder="Describe tu objeto...") }}
               <div class="form-text">
                 Mientras más detallada sea la descripción, más probabilidades
                 tendrás de alquilarlo.
@@ -94,11 +93,11 @@
 
             <div class="mb-3">
               {{ form.imagen.label(class="form-label") }} {{
-              form.imagen(class="form-control",
-              placeholder="https://ejemplo.com/imagen.jpg") }}
+              form.imagen(class="form-control", type="file", accept="image/*")
+              }}
               <div class="form-text">
-                Ingresa la URL de una imagen de tu objeto. Usa servicios como
-                Imgur o Cloudinary para subir tus fotos.
+                Sube una imagen de tu objeto desde tu computadora (formatos
+                permitidos: JPG, PNG, GIF).
               </div>
               {% if form.imagen.errors %}
               <div class="text-danger small">
@@ -137,15 +136,20 @@
   </div>
 </div>
 
-<!-- Script para vista previa de imagen -->
+<!-- Script para vista previa de imagen local -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const imageUrlInput = document.getElementById("{{ form.imagen.id }}");
+    const imageInput = document.getElementById("{{ form.imagen.id }}");
     const imagePreview = document.getElementById("imagePreview");
 
-    imageUrlInput.addEventListener("input", function () {
-      if (this.value) {
-        imagePreview.innerHTML = `<img src="${this.value}" class="img-fluid" style="max-height: 200px;" onerror="this.style.display='none'">`;
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imagePreview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">`;
+        };
+        reader.readAsDataURL(file);
       } else {
         imagePreview.innerHTML =
           '<i class="bi bi-image text-muted" style="font-size: 3rem;"></i><p class="text-muted mt-2 mb-0">La imagen aparecerá aquí</p>';
