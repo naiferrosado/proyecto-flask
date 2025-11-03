@@ -1,9 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Editar Perfil - Rentflow{% endblock
+%} {% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-pencil-square"></i> Editar Mi Perfil
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <!-- Información Personal -->
+            <h5 class="mb-3 text-primary">
+              <i class="bi bi-person-badge"></i> Información Personal
+            </h5>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.nombre.label(class="form-label") }} {{
+                form.nombre(class="form-control") }} {% if form.nombre.errors %}
+                <div class="text-danger small">
+                  {% for error in form.nombre.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                {{ form.apellido.label(class="form-label") }} {{
+                form.apellido(class="form-control") }} {% if
+                form.apellido.errors %}
+                <div class="text-danger small">
+                  {% for error in form.apellido.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              {{ form.correo.label(class="form-label") }} {{
+              form.correo(class="form-control", type="email") }} {% if
+              form.correo.errors %}
+              <div class="text-danger small">
+                {% for error in form.correo.errors %} {{ error }} {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Información de Contacto -->
+            <h5 class="mb-3 text-primary mt-4">
+              <i class="bi bi-telephone"></i> Información de Contacto
+            </h5>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.telefono.label(class="form-label") }} {{
+                form.telefono(class="form-control") }} {% if
+                form.telefono.errors %}
+                <div class="text-danger small">
+                  {% for error in form.telefono.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 mb-3">
+                {{ form.direccion.label(class="form-label") }} {{
+                form.direccion(class="form-control") }} {% if
+                form.direccion.errors %}
+                <div class="text-danger small">
+                  {% for error in form.direccion.errors %} {{ error }} {% endfor
+                  %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Cambio de Contraseña -->
+            <h5 class="mb-3 text-primary mt-4">
+              <i class="bi bi-shield-lock"></i> Seguridad
+            </h5>
+
+            <div class="mb-3">
+              {{ form.contrasena.label(class="form-label") }} {{
+              form.contrasena(class="form-control", placeholder="Dejar en blanco
+              para mantener la contraseña actual") }}
+              <div class="form-text">
+                La contraseña debe tener al menos 6 caracteres.
+              </div>
+              {% if form.contrasena.errors %}
+              <div class="text-danger small">
+                {% for error in form.contrasena.errors %} {{ error }} {% endfor
+                %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Botones -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a
+                href="{{ url_for('usuarios.perfil') }}"
+                class="btn btn-outline-secondary me-md-2"
+              >
+                <i class="bi bi-arrow-left"></i> Cancelar
+              </a>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle"></i> Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
