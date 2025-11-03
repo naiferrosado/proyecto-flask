@@ -1,9 +1,215 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Historial de Pagos - Rentflow{%
+endblock %} {% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2"><i class="bi bi-clock-history"></i> Historial de Pagos</h1>
+    <div class="btn-group">
+      <button
+        class="btn btn-outline-primary dropdown-toggle"
+        type="button"
+        data-bs-toggle="dropdown"
+      >
+        <i class="bi bi-download"></i> Exportar
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">PDF</a></li>
+        <li><a class="dropdown-item" href="#">Excel</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-md-3">
+          <select class="form-select">
+            <option selected>Todos los estados</option>
+            <option value="completado">Completados</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="cancelado">Cancelados</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <input type="date" class="form-control" placeholder="Desde" />
+        </div>
+        <div class="col-md-3">
+          <input type="date" class="form-control" placeholder="Hasta" />
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Pagos -->
+  {% if pagos %}
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Fecha</th>
+              <th>Concepto</th>
+              <th>Método</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pago in pagos %}
+            <tr>
+              <td>
+                <strong>{{ pago.fecha_pago.strftime('%d/%m/%Y') }}</strong>
+                <br />
+                <small class="text-muted"
+                  >{{ pago.fecha_pago.strftime('%H:%M') }}</small
+                >
+              </td>
+              <td>
+                <div>
+                  <strong>{{ pago.reserva.objeto.nombre }}</strong>
+                  <br />
+                  <small class="text-muted">
+                    {{ pago.reserva.fecha_inicio.strftime('%d/%m') }} - {{
+                    pago.reserva.fecha_fin.strftime('%d/%m/%Y') }}
+                  </small>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-secondary">
+                  {% if pago.metodo == 'Tarjeta' %}
+                  <i class="bi bi-credit-card"></i>
+                  {% elif pago.metodo == 'Transferencia' %}
+                  <i class="bi bi-bank"></i>
+                  {% else %}
+                  <i class="bi bi-cash"></i>
+                  {% endif %} {{ pago.metodo }}
+                </span>
+              </td>
+              <td>
+                <strong class="text-success"
+                  >RD$ {{ "%.2f"|format(pago.monto) }}</strong
+                >
+              </td>
+              <td>
+                <span
+                  class="badge bg-{{ 
+                                    'success' if pago.estado == 'Completado' 
+                                    else 'warning' if pago.estado == 'Pendiente'
+                                    else 'danger'
+                                }}"
+                >
+                  {% if pago.estado == 'Completado' %}
+                  <i class="bi bi-check-circle"></i>
+                  {% elif pago.estado == 'Pendiente' %}
+                  <i class="bi bi-clock"></i>
+                  {% else %}
+                  <i class="bi bi-x-circle"></i>
+                  {% endif %} {{ pago.estado }}
+                </span>
+              </td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <button
+                    class="btn btn-outline-primary"
+                    data-bs-toggle="tooltip"
+                    title="Ver comprobante"
+                  >
+                    <i class="bi bi-receipt"></i>
+                  </button>
+                  {% if pago.estado == 'Pendiente' %}
+                  <a
+                    href="{{ url_for('pagos.procesar_pago', id_reserva=pago.reserva.id_reserva) }}"
+                    class="btn btn-outline-success"
+                    data-bs-toggle="tooltip"
+                    title="Completar pago"
+                  >
+                    <i class="bi bi-credit-card"></i>
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body text-center">
+          <h4 class="mb-1">
+            RD$ {{ "%.2f"|format(pagos|sum(attribute='monto')) }}
+          </h4>
+          <small>Total Pagado</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body text-center">
+          <h4 class="mb-1">
+            {{ pagos|selectattr('estado', 'equalto', 'Completado')|list|length
+            }}
+          </h4>
+          <small>Pagos Completados</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body text-center">
+          <h4 class="mb-1">
+            {{ pagos|selectattr('estado', 'equalto', 'Pendiente')|list|length }}
+          </h4>
+          <small>Pagos Pendientes</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-secondary text-white">
+        <div class="card-body text-center">
+          <h4 class="mb-1">{{ pagos|length }}</h4>
+          <small>Total Transacciones</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <!-- Estado vacío -->
+  <div class="text-center py-5">
+    <i class="bi bi-wallet2 display-1 text-muted"></i>
+    <h3 class="text-muted mt-3">No hay pagos registrados</h3>
+    <p class="text-muted">Tu historial de pagos aparecerá aquí</p>
+    <a
+      href="{{ url_for('objetos.listar_objetos') }}"
+      class="btn btn-primary mt-3"
+    >
+      <i class="bi bi-search"></i> Explorar Objetos
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Inicializar tooltips -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>
+{% endblock %}
