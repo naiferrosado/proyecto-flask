@@ -2,49 +2,67 @@
 %} {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow">
-        <div class="card-header bg-success text-white">
-          <h4 class="mb-0">
-            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-          </h4>
-        </div>
-        <div class="card-body p-4">
+    <div class="col-md-6 col-lg-5">
+      <!-- La tarjeta ahora es más limpia y tiene sombra -->
+      <div class="card border-0 rounded-4 shadow-lg p-3">
+        <div class="card-body p-4 p-lg-5">
+          <div class="text-center mb-5">
+            <i
+              class="fa-solid fa-arrow-right-to-bracket fa-3x mb-3"
+              style="color: var(--bs-primary)"
+            ></i>
+            <h3 class="fw-bold mb-0">Bienvenido de Vuelta</h3>
+            <p class="text-muted">
+              Inicia sesión para acceder a tus reservas y publicaciones.
+            </p>
+          </div>
+
           <form method="POST">
             {{ form.hidden_tag() }}
 
-            <div class="mb-3">
-              {{ form.correo.label(class="form-label") }} {{
-              form.correo(class="form-control", placeholder="tu@email.com") }}
-              {% if form.correo.errors %}
-              <div class="text-danger small">
+            <!-- Campo de Correo Electrónico -->
+            <div class="mb-4">
+              {{ form.correo.label(class="form-label fw-bold") }} {{
+              form.correo(class="form-control form-control-lg rounded-3",
+              placeholder="tu@email.com") }} {% if form.correo.errors %}
+              <div class="text-danger small mt-1">
                 {% for error in form.correo.errors %} {{ error }} {% endfor %}
               </div>
               {% endif %}
             </div>
 
-            <div class="mb-3">
-              {{ form.contrasena.label(class="form-label") }} {{
-              form.contrasena(class="form-control", placeholder="Tu contraseña")
-              }} {% if form.contrasena.errors %}
-              <div class="text-danger small">
+            <!-- Campo de Contraseña -->
+            <div class="mb-5">
+              {{ form.contrasena.label(class="form-label fw-bold") }} {{
+              form.contrasena(class="form-control form-control-lg rounded-3",
+              placeholder="Tu contraseña") }} {% if form.contrasena.errors %}
+              <div class="text-danger small mt-1">
                 {% for error in form.contrasena.errors %} {{ error }} {% endfor
                 %}
               </div>
               {% endif %}
+              <div class="text-end mt-2">
+                <a href="#" class="small text-muted text-decoration-none"
+                  >¿Olvidaste tu Contraseña?</a
+                >
+              </div>
             </div>
 
-            <div class="d-grid">
-              {{ form.submit(class="btn btn-success btn-lg") }}
+            <!-- Botón de Enviar (Usa el estilo de acción principal) -->
+            <div class="d-grid mb-4">
+              {{ form.submit(class="btn btn-main-action btn-lg text-white
+              fw-bold rounded-pill py-3") }}
             </div>
           </form>
 
-          <div class="text-center mt-3">
-            <p class="mb-0">
+          <!-- Enlace de Registro -->
+          <div class="text-center">
+            <p class="mb-0 text-muted">
               ¿No tienes cuenta?
               <a
                 href="{{ url_for('auth.register') }}"
-                class="text-decoration-none"
+                class="text-decoration-none fw-bold"
+                style="color: var(--bs-primary)"
               >
                 Regístrate aquí
               </a>

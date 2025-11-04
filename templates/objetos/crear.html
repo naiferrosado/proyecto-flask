@@ -1,39 +1,53 @@
 {% extends "base.html" %} {% block title %}Publicar Objeto - Rentflow{% endblock
 %} {% block content %}
-<div class="container py-4">
+<div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
-      <div class="card shadow">
-        <div class="card-header bg-success text-white">
-          <h4 class="mb-0">
-            <i class="bi bi-plus-circle"></i> Publicar Nuevo Objeto
-          </h4>
-        </div>
-        <div class="card-body p-4">
+      <!-- Tarjeta Principal (limpia, redondeada y con sombra) -->
+      <div class="card border-0 rounded-4 shadow-lg p-3">
+        <div class="card-body p-4 p-lg-5">
+          <!-- Encabezado de la Página -->
+          <div class="text-center mb-5">
+            <i
+              class="fa-solid fa-circle-plus fa-3x mb-3"
+              style="color: var(--bs-primary)"
+            ></i>
+            <h3 class="fw-bold mb-0">Publicar Nuevo Objeto</h3>
+            <p class="text-muted">
+              Comparte tu objeto y empieza a ganar dinero extra.
+            </p>
+          </div>
+
           <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
 
-            <!-- Información Básica -->
-            <h5 class="mb-3 text-primary">
-              <i class="bi bi-info-circle"></i> Información Básica
-            </h5>
+            <!-- Sección 1: Información Básica -->
+            <h4
+              class="mb-4 pb-2 border-bottom fw-bold"
+              style="color: var(--bs-primary)"
+            >
+              <i class="fa-solid fa-info-circle me-2"></i> 1. Información Básica
+            </h4>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                {{ form.nombre.label(class="form-label") }} {{
-                form.nombre(class="form-control", placeholder="Ej: Taladro
-                inalámbrico profesional") }} {% if form.nombre.errors %}
-                <div class="text-danger small">
+            <div class="row g-4">
+              <!-- Nombre -->
+              <div class="col-md-6">
+                {{ form.nombre.label(class="form-label fw-bold") }} {{
+                form.nombre(class="form-control form-control-lg rounded-3",
+                placeholder="Ej: Taladro inalámbrico profesional") }} {% if
+                form.nombre.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.nombre.errors %} {{ error }} {% endfor %}
                 </div>
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-3">
-                {{ form.id_categoria.label(class="form-label") }} {{
-                form.id_categoria(class="form-select") }} {% if
-                form.id_categoria.errors %}
-                <div class="text-danger small">
+              <!-- Categoría -->
+              <div class="col-md-6">
+                {{ form.id_categoria.label(class="form-label fw-bold") }} {{
+                form.id_categoria(class="form-select form-select-lg rounded-3")
+                }} {% if form.id_categoria.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.id_categoria.errors %} {{ error }} {%
                   endfor %}
                 </div>
@@ -41,93 +55,118 @@
               </div>
             </div>
 
-            <div class="mb-3">
-              {{ form.descripcion.label(class="form-label") }} {{
-              form.descripcion(class="form-control", rows="4",
-              placeholder="Describe tu objeto...") }}
+            <!-- Descripción -->
+            <div class="mb-5 mt-4">
+              {{ form.descripcion.label(class="form-label fw-bold") }} {{
+              form.descripcion(class="form-control rounded-3", rows="4",
+              placeholder="Describe tu objeto: marca, modelo, estado, y qué
+              incluye...") }}
               <div class="form-text">
                 Mientras más detallada sea la descripción, más probabilidades
                 tendrás de alquilarlo.
               </div>
               {% if form.descripcion.errors %}
-              <div class="text-danger small">
+              <div class="text-danger small mt-1">
                 {% for error in form.descripcion.errors %} {{ error }} {% endfor
                 %}
               </div>
               {% endif %}
             </div>
 
-            <!-- Precio y Estado -->
-            <h5 class="mb-3 text-primary mt-4">
-              <i class="bi bi-currency-dollar"></i> Precio y Disponibilidad
-            </h5>
+            <!-- Sección 2: Precio y Disponibilidad -->
+            <h4
+              class="mb-4 pb-2 border-bottom fw-bold"
+              style="color: var(--bs-primary)"
+            >
+              <i class="fa-solid fa-tag me-2"></i> 2. Precio y Disponibilidad
+            </h4>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                {{ form.precio.label(class="form-label") }}
-                <div class="input-group">
-                  <span class="input-group-text">RD$</span>
-                  {{ form.precio(class="form-control", placeholder="0.00") }}
+            <div class="row g-4 mb-5">
+              <!-- Precio -->
+              <div class="col-md-6">
+                {{ form.precio.label(class="form-label fw-bold") }}
+                <div class="input-group input-group-lg rounded-3">
+                  <span class="input-group-text rounded-start-3 fw-bold"
+                    >RD$</span
+                  >
+                  {{ form.precio(class="form-control rounded-end-3",
+                  placeholder="0.00") }}
                 </div>
+                <div class="form-text">Precio por día.</div>
                 {% if form.precio.errors %}
-                <div class="text-danger small">
+                <div class="text-danger small mt-1">
                   {% for error in form.precio.errors %} {{ error }} {% endfor %}
                 </div>
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-3">
-                {{ form.estado.label(class="form-label") }} {{
-                form.estado(class="form-select") }} {% if form.estado.errors %}
-                <div class="text-danger small">
+              <!-- Estado -->
+              <div class="col-md-6">
+                {{ form.estado.label(class="form-label fw-bold") }} {{
+                form.estado(class="form-select form-select-lg rounded-3") }}
+                <div class="form-text">Condición actual del objeto.</div>
+                {% if form.estado.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.estado.errors %} {{ error }} {% endfor %}
                 </div>
                 {% endif %}
               </div>
             </div>
 
-            <!-- Imagen -->
-            <h5 class="mb-3 text-primary mt-4">
-              <i class="bi bi-image"></i> Imagen del Objeto
-            </h5>
+            <!-- Sección 3: Imágenes -->
+            <h4
+              class="mb-4 pb-2 border-bottom fw-bold"
+              style="color: var(--bs-primary)"
+            >
+              <i class="fa-solid fa-image me-2"></i> 3. Imágenes (Máx. 5)
+            </h4>
 
-            <div class="mb-3">
-              {{ form.imagen.label(class="form-label") }} {{
-              form.imagen(class="form-control", type="file", accept="image/*")
-              }}
+            <div class="mb-4">
+              {{ form.imagen.label(class="form-label fw-bold") }}
+              <!-- Nota: En un sistema real, el input de imagen permitiría subir múltiples archivos -->
+              {{ form.imagen(class="form-control form-control-lg rounded-3",
+              type="file", accept="image/*") }}
               <div class="form-text">
-                Sube una imagen de tu objeto desde tu computadora (formatos
-                permitidos: JPG, PNG, GIF).
+                Sube al menos una imagen de alta calidad desde tu computadora.
               </div>
               {% if form.imagen.errors %}
-              <div class="text-danger small">
+              <div class="text-danger small mt-1">
                 {% for error in form.imagen.errors %} {{ error }} {% endfor %}
               </div>
               {% endif %}
             </div>
 
             <!-- Vista previa de imagen -->
-            <div class="mb-4">
-              <label class="form-label">Vista previa</label>
+            <div class="mb-5">
+              <label class="form-label fw-bold"
+                >Vista previa de la imagen</label
+              >
               <div
                 id="imagePreview"
-                class="border rounded p-3 text-center"
-                style="min-height: 150px; background: #f8f9fa"
+                class="border rounded-3 p-4 text-center"
+                style="min-height: 200px; background: #f4f4f4"
               >
-                <i class="bi bi-image text-muted" style="font-size: 3rem"></i>
-                <p class="text-muted mt-2 mb-0">La imagen aparecerá aquí</p>
+                <i
+                  class="fa-solid fa-camera text-muted"
+                  style="font-size: 3rem"
+                ></i>
+                <p class="text-muted mt-2 mb-0">
+                  La imagen de portada aparecerá aquí
+                </p>
               </div>
             </div>
 
-            <!-- Botones -->
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <!-- Botones de Acción Final -->
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top">
               <a
                 href="{{ url_for('objetos.listar_objetos') }}"
-                class="btn btn-outline-secondary me-md-2"
+                class="btn btn-outline-secondary btn-lg rounded-pill px-4"
               >
-                <i class="bi bi-arrow-left"></i> Cancelar
+                <i class="fa-solid fa-arrow-left me-2"></i> Cancelar
               </a>
-              {{ form.submit(class="btn btn-success btn-lg") }}
+              <!-- Botón de Envío Principal -->
+              {{ form.submit(class="btn btn-main-action btn-lg text-white
+              fw-bold rounded-pill px-5") }}
             </div>
           </form>
         </div>
@@ -136,25 +175,30 @@
   </div>
 </div>
 
-<!-- Script para vista previa de imagen local -->
+<!-- Script para vista previa de imagen local (Ajustado a Font Awesome) -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const imageInput = document.getElementById("{{ form.imagen.id }}");
+    // Asegúrate de que este ID coincida con el ID real de tu campo de formulario
+    const imageInput = document.querySelector(
+      'input[type="file"][name="{{ form.imagen.id }}"], input[type="file"]'
+    );
     const imagePreview = document.getElementById("imagePreview");
 
-    imageInput.addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          imagePreview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">`;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        imagePreview.innerHTML =
-          '<i class="bi bi-image text-muted" style="font-size: 3rem;"></i><p class="text-muted mt-2 mb-0">La imagen aparecerá aquí</p>';
-      }
-    });
+    if (imageInput) {
+      imageInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagePreview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded-3" style="max-height: 200px;">`;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.innerHTML =
+            '<i class="fa-solid fa-camera text-muted" style="font-size: 3rem;"></i><p class="text-muted mt-2 mb-0">La imagen de portada aparecerá aquí</p>';
+        }
+      });
+    }
   });
 </script>
 {% endblock %}

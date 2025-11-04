@@ -2,31 +2,43 @@
 {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-success text-white">
-          <h4 class="mb-0"><i class="bi bi-person-plus"></i> Crear Cuenta</h4>
-        </div>
-        <div class="card-body p-4">
+    <!-- Hacemos la tarjeta un poco más ancha (col-lg-8) para acomodar el formulario de dos columnas -->
+    <div class="col-md-10 col-lg-8">
+      <div class="card border-0 rounded-4 shadow-lg p-3">
+        <div class="card-body p-4 p-lg-5">
+          <!-- Encabezado de la Tarjeta -->
+          <div class="text-center mb-5">
+            <i
+              class="fa-solid fa-user-plus fa-3x mb-3"
+              style="color: var(--bs-primary)"
+            ></i>
+            <h3 class="fw-bold mb-0">Crear una Cuenta</h3>
+            <p class="text-muted">
+              Únete a la comunidad de Rentflow y empieza a compartir.
+            </p>
+          </div>
+
           <form method="POST">
             {{ form.hidden_tag() }}
 
             <div class="row">
-              <div class="col-md-6 mb-3">
-                {{ form.nombre.label(class="form-label") }} {{
-                form.nombre(class="form-control", placeholder="Tu nombre") }} {%
-                if form.nombre.errors %}
-                <div class="text-danger small">
+              <!-- Columna: Nombre -->
+              <div class="col-md-6 mb-4">
+                {{ form.nombre.label(class="form-label fw-bold") }} {{
+                form.nombre(class="form-control form-control-lg rounded-3",
+                placeholder="Tu nombre") }} {% if form.nombre.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.nombre.errors %} {{ error }} {% endfor %}
                 </div>
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-3">
-                {{ form.apellido.label(class="form-label") }} {{
-                form.apellido(class="form-control", placeholder="Tu apellido")
-                }} {% if form.apellido.errors %}
-                <div class="text-danger small">
+              <!-- Columna: Apellido -->
+              <div class="col-md-6 mb-4">
+                {{ form.apellido.label(class="form-label fw-bold") }} {{
+                form.apellido(class="form-control form-control-lg rounded-3",
+                placeholder="Tu apellido") }} {% if form.apellido.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.apellido.errors %} {{ error }} {% endfor
                   %}
                 </div>
@@ -34,34 +46,38 @@
               </div>
             </div>
 
-            <div class="mb-3">
-              {{ form.correo.label(class="form-label") }} {{
-              form.correo(class="form-control", placeholder="tu@email.com") }}
-              {% if form.correo.errors %}
-              <div class="text-danger small">
+            <!-- Campo: Correo -->
+            <div class="mb-4">
+              {{ form.correo.label(class="form-label fw-bold") }} {{
+              form.correo(class="form-control form-control-lg rounded-3",
+              placeholder="tu@email.com") }} {% if form.correo.errors %}
+              <div class="text-danger small mt-1">
                 {% for error in form.correo.errors %} {{ error }} {% endfor %}
               </div>
               {% endif %}
             </div>
 
             <div class="row">
-              <div class="col-md-6 mb-3">
-                {{ form.contrasena.label(class="form-label") }} {{
-                form.contrasena(class="form-control", placeholder="Mínimo 6
-                caracteres") }} {% if form.contrasena.errors %}
-                <div class="text-danger small">
+              <!-- Columna: Contraseña -->
+              <div class="col-md-6 mb-4">
+                {{ form.contrasena.label(class="form-label fw-bold") }} {{
+                form.contrasena(class="form-control form-control-lg rounded-3",
+                placeholder="Mínimo 6 caracteres") }} {% if
+                form.contrasena.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.contrasena.errors %} {{ error }} {%
                   endfor %}
                 </div>
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-3">
-                {{ form.confirmar_contrasena.label(class="form-label") }} {{
-                form.confirmar_contrasena(class="form-control",
-                placeholder="Repite tu contraseña") }} {% if
-                form.confirmar_contrasena.errors %}
-                <div class="text-danger small">
+              <!-- Columna: Confirmar Contraseña -->
+              <div class="col-md-6 mb-4">
+                {{ form.confirmar_contrasena.label(class="form-label fw-bold")
+                }} {{ form.confirmar_contrasena(class="form-control
+                form-control-lg rounded-3", placeholder="Repite tu contraseña")
+                }} {% if form.confirmar_contrasena.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.confirmar_contrasena.errors %} {{ error
                   }} {% endfor %}
                 </div>
@@ -70,22 +86,25 @@
             </div>
 
             <div class="row">
-              <div class="col-md-6 mb-3">
-                {{ form.telefono.label(class="form-label") }} {{
-                form.telefono(class="form-control", placeholder="809-123-4567")
-                }} {% if form.telefono.errors %}
-                <div class="text-danger small">
+              <!-- Columna: Teléfono -->
+              <div class="col-md-6 mb-4">
+                {{ form.telefono.label(class="form-label fw-bold") }} {{
+                form.telefono(class="form-control form-control-lg rounded-3",
+                placeholder="809-123-4567") }} {% if form.telefono.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.telefono.errors %} {{ error }} {% endfor
                   %}
                 </div>
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-3">
-                {{ form.direccion.label(class="form-label") }} {{
-                form.direccion(class="form-control", placeholder="Tu dirección")
-                }} {% if form.direccion.errors %}
-                <div class="text-danger small">
+              <!-- Columna: Dirección -->
+              <div class="col-md-6 mb-4">
+                {{ form.direccion.label(class="form-label fw-bold") }} {{
+                form.direccion(class="form-control form-control-lg rounded-3",
+                placeholder="Tu dirección (Opcional)") }} {% if
+                form.direccion.errors %}
+                <div class="text-danger small mt-1">
                   {% for error in form.direccion.errors %} {{ error }} {% endfor
                   %}
                 </div>
@@ -93,17 +112,21 @@
               </div>
             </div>
 
-            <div class="d-grid">
-              {{ form.submit(class="btn btn-success btn-lg") }}
+            <!-- Botón de Envío -->
+            <div class="d-grid my-4">
+              {{ form.submit(class="btn btn-main-action btn-lg text-white
+              fw-bold rounded-pill py-3") }}
             </div>
           </form>
 
-          <div class="text-center mt-3">
-            <p class="mb-0">
+          <!-- Enlace de Inicio de Sesión -->
+          <div class="text-center">
+            <p class="mb-0 text-muted">
               ¿Ya tienes cuenta?
               <a
                 href="{{ url_for('auth.login') }}"
-                class="text-decoration-none"
+                class="text-decoration-none fw-bold"
+                style="color: var(--bs-primary)"
               >
                 Inicia sesión aquí
               </a>

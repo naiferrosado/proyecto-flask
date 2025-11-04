@@ -1,86 +1,122 @@
 {% extends "base.html" %} {% block content %}
-<!-- Hero Section -->
-<section class="hero-section text-white py-5">
-  <div class="container">
+
+<!-- HERO SECTION: Diseño Minimalista de Pantalla Completa -->
+<section class="py-5 vh-100 d-flex align-items-center bg-white">
+  <div class="container-fluid px-5">
     <div class="row align-items-center">
-      <div class="col-lg-6">
-        <h1 class="display-4 fw-bold">
-          Alquila lo que necesites, cuando lo necesites
+      <!-- Columna de Texto -->
+      <div class="col-lg-7">
+        <h1 class="display-3 fw-bold text-dark mb-4" style="line-height: 1.1">
+          Alquila lo que <br />
+          necesites, cuando <br />
+          lo necesites
         </h1>
-        <p class="lead">
+
+        <p class="lead text-secondary mb-5 pe-lg-5">
           Conectamos personas que tienen objetos con quienes los necesitan
-          temporalmente. Economía circular y consumo responsable.
+          temporalmente.
+          <br />Fomentamos la economía circular y el consumo responsable.
         </p>
-        {% if not current_user.is_authenticated %}
+
+        <!-- Botones de Acción -->
         <div class="mt-4">
+          {% if not current_user.is_authenticated %}
           <a
             href="{{ url_for('auth.register') }}"
-            class="btn btn-light btn-lg me-3"
-            >Comenzar Ahora</a
+            class="btn btn-main-action btn-lg text-white me-3 px-5 py-3 rounded-pill shadow-sm"
           >
+            Comenzar Ahora <i class="fa-solid fa-arrow-right ms-2"></i>
+          </a>
           <a
             href="{{ url_for('objetos.listar_objetos') }}"
-            class="btn btn-outline-light btn-lg"
-            >Ver Objetos</a
+            class="btn btn-outline-secondary btn-lg px-4 py-3 rounded-pill"
           >
-        </div>
-        {% else %}
-        <div class="mt-4">
+            Ver Objetos
+          </a>
+          {% else %}
           <a
             href="{{ url_for('objetos.crear_objeto') }}"
-            class="btn btn-light btn-lg me-3"
+            class="btn btn-main-action btn-lg text-white me-3 px-5 py-3 rounded-pill shadow-sm"
           >
-            <i class="bi bi-plus-circle"></i> Publicar Objeto
+            <i class="fa-solid fa-circle-plus"></i> Publicar Objeto
           </a>
           <a
             href="{{ url_for('objetos.listar_objetos') }}"
-            class="btn btn-outline-light btn-lg"
+            class="btn btn-outline-secondary btn-lg px-4 py-3 rounded-pill"
           >
-            <i class="bi bi-search"></i> Explorar
+            <i class="fa-solid fa-magnifying-glass"></i> Explorar
           </a>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
-      <div class="col-lg-6 text-center">
-        <i class="bi bi-arrow-repeat" style="font-size: 8rem; opacity: 0.8"></i>
+
+      <!-- Columna de Ilustración/Espacio -->
+      <div class="col-lg-5 text-center d-none d-lg-block">
+        <!-- Se podría agregar una ilustración SVG aquí para un toque moderno -->
+        <i
+          class="fa-solid fa-recycle"
+          style="font-size: 10rem; color: #ced4da; opacity: 0.5"
+        ></i>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Objetos Destacados -->
-<section class="py-5">
+<!-- SECCIÓN: OBJETOS DESTACADOS (Galería de Tarjetas Profesionales) -->
+<section class="py-5 bg-light">
   <div class="container">
-    <h2 class="text-center mb-5">Objetos Disponibles</h2>
+    <h2 class="text-center mb-5 fw-bold">Descubre Objetos Cerca de Ti</h2>
 
     {% if objetos %}
-    <div class="row">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
       {% for objeto in objetos %}
-      <div class="col-md-3 mb-4">
-        <div class="card object-card h-100">
-          <img
-            src="{{ objeto.imagen or '/static/images/default-object.jpg' }}"
-            class="card-img-top"
-            alt="{{ objeto.nombre }}"
-            style="height: 200px; object-fit: cover"
-          />
-          <div class="card-body">
-            <h5 class="card-title">{{ objeto.nombre }}</h5>
-            <p class="card-text text-muted small">
-              {{ objeto.descripcion[:100] }}{% if objeto.descripcion|length >
-              100 %}...{% endif %}
+      <div class="col">
+        <!-- Estilo de Tarjeta Mejorado -->
+        <div
+          class="card h-100 object-card border-0 shadow-sm rounded-3 overflow-hidden"
+        >
+          <div class="object-image-container">
+            <img
+              src="{{ objeto.imagen or 'https://via.placeholder.com/400x300/e9ecef/495057?text=Rentflow' }}"
+              class="card-img-top"
+              alt="{{ objeto.nombre }}"
+              style="
+                height: 200px;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+              "
+            />
+            <!-- Overlay para el estado -->
+            <span
+              class="badge text-bg-success position-absolute top-0 end-0 m-2 rounded-pill shadow-sm"
+            >
+              <i class="fa-solid fa-check-circle me-1"></i> Disponible
+            </span>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold text-truncate">
+              {{ objeto.nombre }}
+            </h5>
+            <p class="card-text text-muted small mb-3">
+              {{ objeto.descripcion[:60] }}{% if objeto.descripcion|length > 60
+              %}...{% endif %}
             </p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="h5 text-primary"
-                >RD$ {{ "%.2f"|format(objeto.precio) }}</span
+
+            <div
+              class="mt-auto pt-2 d-flex justify-content-between align-items-center"
+            >
+              <!-- Precio en el color primario -->
+              <span class="h5 fw-bold" style="color: var(--bs-primary)"
+                >RD$ {{ "%.2f"|format(objeto.precio) }}
+                <span class="small text-muted">/ día</span></span
               >
-              <span class="badge bg-success">{{ objeto.estado }}</span>
             </div>
           </div>
-          <div class="card-footer bg-white">
+          <div class="card-footer bg-white border-top-0 p-3">
             <a
               href="{{ url_for('objetos.detalle_objeto', id=objeto.id_objeto) }}"
-              class="btn btn-primary w-100"
+              class="btn btn-outline-primary w-100 fw-bold"
             >
               Ver Detalles
             </a>
@@ -90,23 +126,27 @@
       {% endfor %}
     </div>
 
-    <div class="text-center mt-4">
+    <div class="text-center mt-5">
       <a
         href="{{ url_for('objetos.listar_objetos') }}"
-        class="btn btn-outline-primary"
+        class="btn btn-outline-secondary btn-lg rounded-pill px-5 py-3"
       >
-        Ver Todos los Objetos
+        Ver Todo el Catálogo <i class="fa-solid fa-arrow-right ms-2"></i>
       </a>
     </div>
     {% else %}
     <div class="text-center py-5">
-      <i class="bi bi-inbox display-1 text-muted"></i>
-      <h3 class="text-muted mt-3">No hay objetos disponibles</h3>
+      <i class="fa-solid fa-inbox display-1 text-muted opacity-50"></i>
+      <h3 class="text-muted mt-3">
+        ¡Estamos empezando! No hay objetos disponibles.
+      </h3>
       {% if current_user.is_authenticated %}
-      <p class="text-muted">Sé el primero en publicar un objeto</p>
+      <p class="text-muted">
+        Sé el primero en publicar un objeto y gana dinero extra.
+      </p>
       <a
         href="{{ url_for('objetos.crear_objeto') }}"
-        class="btn btn-primary mt-3"
+        class="btn btn-main-action btn-lg mt-3"
       >
         Publicar Mi Primer Objeto
       </a>
@@ -115,4 +155,57 @@
     {% endif %}
   </div>
 </section>
+
+<!-- SECCIÓN: CÓMO FUNCIONA (Opcional - para llenar la página) -->
+<section class="py-5">
+  <div class="container text-center">
+    <h2 class="mb-4 fw-bold">¿Cómo funciona Rentflow?</h2>
+    <p class="text-muted mb-5">
+      Alquilar es fácil y seguro en 3 simples pasos.
+    </p>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="p-4 rounded-3 bg-white shadow-sm h-100">
+          <i
+            class="fa-solid fa-magnifying-glass fa-2x mb-3"
+            style="color: var(--bs-primary)"
+          ></i>
+          <h5 class="fw-bold">1. Encuentra</h5>
+          <p class="small text-muted mb-0">
+            Busca el objeto que necesitas en tu ubicación y revisa la
+            disponibilidad.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-3 bg-white shadow-sm h-100">
+          <i
+            class="fa-solid fa-calendar-check fa-2x mb-3"
+            style="color: var(--bs-primary)"
+          ></i>
+          <h5 class="fw-bold">2. Reserva</h5>
+          <p class="small text-muted mb-0">
+            Acuerda la fecha con el propietario y confirma tu reserva con pago
+            seguro.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-3 bg-white shadow-sm h-100">
+          <i
+            class="fa-solid fa-handshake fa-2x mb-3"
+            style="color: var(--bs-primary)"
+          ></i>
+          <h5 class="fw-bold">3. Disfruta</h5>
+          <p class="small text-muted mb-0">
+            Recoge y utiliza el objeto. Devuélvelo a tiempo y déjanos tu
+            valoración.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% endblock %}
