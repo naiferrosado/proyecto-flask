@@ -1,53 +1,62 @@
 {% extends "base.html" %} {% block title %}Mi Perfil - Rentflow{% endblock %} {%
 block content %}
-<div class="container py-4">
-  <div class="row">
-    <!-- Sidebar -->
-    <div class="col-lg-4 mb-4">
-      <div class="card">
-        <div class="card-body text-center">
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Sidebar (Tarjeta de Usuario y Estadísticas) -->
+    <div class="col-lg-4">
+      <!-- Tarjeta Principal de Perfil -->
+      <div class="card border-0 rounded-4 shadow-lg mb-4">
+        <div class="card-body text-center p-4">
           <div class="mb-3">
             <i
-              class="bi bi-person-circle"
-              style="font-size: 4rem; color: #6c757d"
+              class="fa-solid fa-circle-user"
+              style="font-size: 4rem; color: #ced4da"
             ></i>
           </div>
-          <h4>{{ usuario.nombre }} {{ usuario.apellido }}</h4>
-          <p class="text-muted">{{ usuario.correo }}</p>
+          <h4 class="fw-bold">{{ usuario.nombre }} {{ usuario.apellido }}</h4>
+          <p class="text-muted small mb-3">{{ usuario.correo }}</p>
 
           <div class="d-grid gap-2">
             <a
               href="{{ url_for('usuarios.editar_perfil') }}"
-              class="btn btn-outline-primary"
+              class="btn btn-outline-primary fw-bold rounded-pill px-4"
             >
-              <i class="bi bi-pencil"></i> Editar Perfil
+              <i class="fa-solid fa-pen me-2"></i> Editar Perfil
             </a>
           </div>
         </div>
       </div>
 
-      <!-- Estadísticas -->
-      <div class="card mt-4">
-        <div class="card-header">
-          <h6 class="mb-0">Mis Estadísticas</h6>
+      <!-- Estadísticas Detalladas -->
+      <div class="card border-0 rounded-4 shadow-sm">
+        <div class="card-header bg-white border-0 pb-0">
+          <h5 class="fw-bold mb-0">
+            <i
+              class="fa-solid fa-chart-simple me-2"
+              style="color: var(--bs-primary)"
+            ></i>
+            Mis Estadísticas
+          </h5>
         </div>
-        <div class="card-body">
-          <div class="row text-center">
-            <div class="col-6 mb-3">
-              <div class="h4 text-primary">0</div>
+        <div class="card-body pt-3">
+          <div class="row text-center g-3">
+            <div class="col-6">
+              <div class="h3 fw-bold mb-0" style="color: #00874a">0</div>
               <small class="text-muted">Objetos Publicados</small>
             </div>
-            <div class="col-6 mb-3">
-              <div class="h4 text-success">0</div>
+            <div class="col-6">
+              <div class="h3 fw-bold mb-0 text-success">0</div>
               <small class="text-muted">Reservas Activas</small>
             </div>
             <div class="col-6">
-              <div class="h4 text-warning">0</div>
-              <small class="text-muted">Opiniones</small>
+              <div class="h3 fw-bold mb-0 text-warning">0</div>
+              <small class="text-muted">Opiniones Recibidas</small>
             </div>
             <div class="col-6">
-              <div class="h4 text-info">⭐ 0.0</div>
-              <small class="text-muted">Calificación</small>
+              <div class="h3 fw-bold mb-0 text-info">
+                <i class="fa-solid fa-star small"></i> 0.0
+              </div>
+              <small class="text-muted">Calificación Promedio</small>
             </div>
           </div>
         </div>
@@ -56,57 +65,74 @@ block content %}
 
     <!-- Contenido Principal -->
     <div class="col-lg-8">
-      <!-- Información Personal -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">
-            <i class="bi bi-person-badge"></i> Información Personal
+      <!-- Bloque: Información Personal -->
+      <div class="card border-0 rounded-4 shadow-lg mb-4">
+        <div class="card-header bg-white border-0 pb-0">
+          <h5 class="fw-bold mb-0">
+            <i
+              class="fa-solid fa-address-card me-2"
+              style="color: var(--bs-primary)"
+            ></i>
+            Datos Generales
           </h5>
         </div>
         <div class="card-body">
-          <div class="row">
+          <div class="row g-3">
             <div class="col-md-6">
-              <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-              <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
-              <p><strong>Correo:</strong> {{ usuario.correo }}</p>
+              <p class="mb-1 fw-bold">Nombre:</p>
+              <p class="mb-3 text-muted">
+                {{ usuario.nombre }} {{ usuario.apellido }}
+              </p>
+
+              <p class="mb-1 fw-bold">Teléfono:</p>
+              <p class="mb-3 text-muted">{{ usuario.telefono or 'N/A' }}</p>
             </div>
             <div class="col-md-6">
-              <p><strong>Teléfono:</strong> {{ usuario.telefono }}</p>
-              <p><strong>Dirección:</strong> {{ usuario.direccion }}</p>
-              <p>
-                <strong>Miembro desde:</strong> {{
-                usuario.fecha_registro.strftime('%d/%m/%Y') }}
+              <p class="mb-1 fw-bold">Correo Electrónico:</p>
+              <p class="mb-3 text-muted">{{ usuario.correo }}</p>
+
+              <p class="mb-1 fw-bold">Miembro desde:</p>
+              <p class="mb-3 text-muted">
+                {{ usuario.fecha_registro.strftime('%d/%m/%Y') }}
               </p>
             </div>
           </div>
+          <p class="mb-1 fw-bold">Dirección:</p>
+          <p class="mb-0 text-muted">
+            {{ usuario.direccion or 'No especificada' }}
+          </p>
         </div>
       </div>
 
-      <!-- Objetos Publicados -->
-      <div class="card mb-4">
+      <!-- Bloque: Objetos Publicados -->
+      <div class="card border-0 rounded-4 shadow-lg mb-4">
         <div
-          class="card-header d-flex justify-content-between align-items-center"
+          class="card-header bg-white border-0 d-flex justify-content-between align-items-center pb-0"
         >
-          <h5 class="mb-0">
-            <i class="bi bi-grid"></i> Mis Objetos Publicados
+          <h5 class="fw-bold mb-0">
+            <i
+              class="fa-solid fa-box-open me-2"
+              style="color: var(--bs-primary)"
+            ></i>
+            Mis Objetos Publicados
           </h5>
           <a
             href="{{ url_for('objetos.crear_objeto') }}"
-            class="btn btn-sm btn-primary"
+            class="btn btn-sm btn-main-action fw-bold rounded-pill"
           >
-            <i class="bi bi-plus"></i> Nuevo
+            <i class="fa-solid fa-plus me-1"></i> Nuevo
           </a>
         </div>
-        <div class="card-body">
+        <div class="card-body pt-3">
           {% if usuario.objetos %}
           <div class="table-responsive">
-            <table class="table table-hover">
+            <table class="table table-hover align-middle">
               <thead>
-                <tr>
-                  <th>Objeto</th>
-                  <th>Precio</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
+                <tr class="small text-uppercase">
+                  <th class="border-top-0">Objeto</th>
+                  <th class="border-top-0">Precio / Día</th>
+                  <th class="border-top-0">Estado</th>
+                  <th class="border-top-0"></th>
                 </tr>
               </thead>
               <tbody>
@@ -115,33 +141,39 @@ block content %}
                   <td>
                     <div class="d-flex align-items-center">
                       <img
-                        src="{{ objeto.imagen or '/static/images/default-object.jpg' }}"
-                        class="rounded me-3"
+                        src="{{ objeto.imagen or 'https://placehold.co/50x50/f4f4f4/333333?text=IMG' }}"
+                        class="rounded-3 me-3"
                         style="width: 50px; height: 50px; object-fit: cover"
                       />
                       <div>
-                        <strong>{{ objeto.nombre }}</strong>
-                        <br />
+                        <strong class="text-dark d-block"
+                          >{{ objeto.nombre }}</strong
+                        >
                         <small class="text-muted"
                           >{{ objeto.categoria.nombre }}</small
                         >
                       </div>
                     </div>
                   </td>
-                  <td>RD$ {{ "%.2f"|format(objeto.precio) }}</td>
+                  <td class="fw-bold" style="color: var(--bs-primary)">
+                    RD$ {{ "%.2f"|format(objeto.precio) }}
+                  </td>
                   <td>
                     <span
-                      class="badge bg-{{ 'success' if objeto.estado == 'Disponible' else 'warning' }}"
+                      class="badge bg-{{ 'primary' if objeto.estado == 'Disponible' else 'warning' }} text-uppercase py-1 px-2"
                     >
                       {{ objeto.estado }}
                     </span>
                   </td>
-                  <td>
+                  <td class="text-end">
                     <a
                       href="{{ url_for('objetos.detalle_objeto', id=objeto.id_objeto) }}"
-                      class="btn btn-sm btn-outline-primary"
+                      class="btn btn-sm btn-outline-secondary rounded-pill"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Ver Detalles"
                     >
-                      <i class="bi bi-eye"></i>
+                      <i class="fa-solid fa-eye"></i>
                     </a>
                   </td>
                 </tr>
@@ -150,14 +182,17 @@ block content %}
             </table>
           </div>
           {% else %}
-          <div class="text-center py-4">
-            <i class="bi bi-inbox display-4 text-muted"></i>
-            <p class="text-muted mt-3">Aún no has publicado ningún objeto</p>
+          <div class="text-center py-4 bg-light rounded-3">
+            <i class="fa-solid fa-inbox fa-3x text-muted"></i>
+            <p class="text-muted mt-3 mb-2">
+              Aún no has publicado ningún objeto
+            </p>
             <a
               href="{{ url_for('objetos.crear_objeto') }}"
-              class="btn btn-primary"
+              class="btn btn-main-action fw-bold rounded-pill px-4"
             >
-              <i class="bi bi-plus-circle"></i> Publicar Mi Primer Objeto
+              <i class="fa-solid fa-circle-plus me-2"></i> Publicar Mi Primer
+              Objeto
             </a>
           </div>
           {% endif %}
