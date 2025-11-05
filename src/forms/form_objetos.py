@@ -1,13 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    TextAreaField,
-    SubmitField,
-    DateField,
-    DecimalField,
-    IntegerField,
-    SelectField,
-)
+from wtforms import StringField, TextAreaField, SubmitField, DecimalField, SelectField
 from wtforms.validators import DataRequired, Length, NumberRange
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -20,6 +12,7 @@ class ObjetoForm(FlaskForm):
             Length(max=100, message="El nombre no puede tener más de 100 caracteres."),
         ],
     )
+
     descripcion = TextAreaField(
         "Descripción",
         validators=[
@@ -28,6 +21,7 @@ class ObjetoForm(FlaskForm):
             )
         ],
     )
+
     estado = SelectField(
         "Estado",
         choices=[
@@ -47,7 +41,6 @@ class ObjetoForm(FlaskForm):
         ],
     )
 
-    # ✅ Ahora el campo imagen es un FileField, no una URL
     imagen = FileField(
         "Imagen del Objeto",
         validators=[
@@ -59,18 +52,10 @@ class ObjetoForm(FlaskForm):
         ],
     )
 
-    fecha_publicacion = DateField(
-        "Fecha de Publicación",
-        format="%Y-%m-%d",
-        validators=[DataRequired(message="La fecha de publicación es obligatoria.")],
-    )
-    id_usuario = IntegerField(
-        "ID Usuario",
-        validators=[DataRequired(message="El ID del usuario es obligatorio.")],
-    )
-    id_categoria = IntegerField(
-        "ID Categoría",
-        validators=[DataRequired(message="El ID de la categoría es obligatorio.")],
+    id_categoria = SelectField(
+        "Categoría",
+        coerce=int,
+        validators=[DataRequired(message="Debe seleccionar una categoría.")],
     )
 
     submit = SubmitField("Guardar")

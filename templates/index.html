@@ -71,54 +71,51 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
       {% for objeto in objetos %}
       <div class="col">
-        <!-- Estilo de Tarjeta Mejorado -->
+        <!-- Tarjeta de Objeto -->
         <div
           class="card h-100 object-card border-0 shadow-sm rounded-3 overflow-hidden"
         >
-          <div class="object-image-container">
+          <div class="object-image-container position-relative">
             <img
-              src="{{ objeto.imagen or 'https://via.placeholder.com/400x300/e9ecef/495057?text=Rentflow' }}"
-              class="card-img-top"
-              alt="{{ objeto.nombre }}"
-              style="
-                height: 200px;
-                object-fit: cover;
-                transition: transform 0.5s ease;
-              "
-            />
-            <!-- Overlay para el estado -->
+  src="{{ url_for('static', filename=objeto.imagen) if objeto.imagen else 'https://via.placeholder.com/400x300/e9ecef/495057?text=Rentflow' }}"
+  class="card-img-top"
+  alt="{{ objeto.nombre }}"
+  style="height: 200px; object-fit: cover; transition: transform 0.5s ease;"
+/>
+
+            <!-- Overlay de Estado -->
             <span
-              class="badge text-bg-success position-absolute top-0 end-0 m-2 rounded-pill shadow-sm"
+              class="badge bg-{{ 'success' if objeto.estado == 'Disponible' else 'secondary' }} position-absolute top-0 end-0 m-2 rounded-pill shadow-sm"
             >
-              <i class="fa-solid fa-check-circle me-1"></i> Disponible
+              <i class="fa-solid fa-check-circle me-1"></i> {{ objeto.estado }}
             </span>
           </div>
 
+          <!-- Cuerpo de la Tarjeta -->
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title fw-bold text-truncate">
+            <h5 class="card-title fw-bold text-truncate mb-2">
               {{ objeto.nombre }}
             </h5>
             <p class="card-text text-muted small mb-3">
-              {{ objeto.descripcion[:60] }}{% if objeto.descripcion|length > 60
-              %}...{% endif %}
+              {{ objeto.descripcion[:60] }}{% if objeto.descripcion|length > 60 %}...{% endif %}
             </p>
 
-            <div
-              class="mt-auto pt-2 d-flex justify-content-between align-items-center"
-            >
-              <!-- Precio en el color primario -->
-              <span class="h5 fw-bold" style="color: var(--bs-primary)"
-                >RD$ {{ "%.2f"|format(objeto.precio) }}
-                <span class="small text-muted">/ día</span></span
-              >
+            <!-- Precio -->
+            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+              <span class="h5 fw-bold" style="color: var(--bs-primary)">
+                RD$ {{ "%.2f"|format(objeto.precio) }}
+              </span>
+              <small class="text-muted">/día</small>
             </div>
           </div>
+
+          <!-- Pie de Tarjeta -->
           <div class="card-footer bg-white border-top-0 p-3">
             <a
               href="{{ url_for('objetos.detalle_objeto', id=objeto.id_objeto) }}"
-              class="btn btn-outline-primary w-100 fw-bold"
+              class="btn btn-outline-primary w-100 fw-bold rounded-pill"
             >
-              Ver Detalles
+              <i class="fa-solid fa-eye me-2"></i> Ver Detalles
             </a>
           </div>
         </div>
@@ -126,6 +123,7 @@
       {% endfor %}
     </div>
 
+    <!-- Botón "Ver Todo" -->
     <div class="text-center mt-5">
       <a
         href="{{ url_for('objetos.listar_objetos') }}"
@@ -134,10 +132,12 @@
         Ver Todo el Catálogo <i class="fa-solid fa-arrow-right ms-2"></i>
       </a>
     </div>
+
     {% else %}
+    <!-- Estado Vacío -->
     <div class="text-center py-5">
       <i class="fa-solid fa-inbox display-1 text-muted opacity-50"></i>
-      <h3 class="text-muted mt-3">
+      <h3 class="text-muted mt-3 fw-bold">
         ¡Estamos empezando! No hay objetos disponibles.
       </h3>
       {% if current_user.is_authenticated %}
@@ -146,15 +146,16 @@
       </p>
       <a
         href="{{ url_for('objetos.crear_objeto') }}"
-        class="btn btn-main-action btn-lg mt-3"
+        class="btn btn-main-action btn-lg mt-3 rounded-pill px-5"
       >
-        Publicar Mi Primer Objeto
+        <i class="fa-solid fa-circle-plus me-2"></i> Publicar Mi Primer Objeto
       </a>
       {% endif %}
     </div>
     {% endif %}
   </div>
 </section>
+
 
 <!-- SECCIÓN: CÓMO FUNCIONA (Opcional - para llenar la página) -->
 <section class="py-5">

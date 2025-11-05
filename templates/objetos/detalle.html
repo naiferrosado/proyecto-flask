@@ -1,41 +1,39 @@
-{% extends "base.html" %} {% block title %}{{ objeto.nombre }} - Rentflow{%
-endblock %} {% block content %}
+{% extends "base.html" %}
+{% block title %}{{ objeto.nombre }} - Rentflow{% endblock %}
+
+{% block content %}
 <div class="container py-5">
   <div class="row g-5">
     <!-- Columna Principal (Imágenes y Descripción) -->
     <div class="col-lg-8">
-      <!-- Bloque de Imágenes -->
+      <!-- Imagen principal -->
       <div class="card border-0 rounded-4 shadow-sm mb-4">
         <img
-          src="{{ objeto.imagen or 'https://placehold.co/800x400/f4f4f4/333333?text=IMAGEN+PRINCIPAL' }}"
+          src="{{ url_for('static', filename=objeto.imagen) if objeto.imagen else 'https://placehold.co/800x400/f4f4f4/333333?text=IMAGEN+PRINCIPAL' }}"
           class="card-img-top rounded-top-4"
           alt="{{ objeto.nombre }}"
-          style="height: 400px; object-fit: cover"
+          style="height: 400px; object-fit: cover;"
         />
-        <!-- Opcional: Galería de miniaturas debajo si tu objeto.imagenes fuera una lista -->
       </div>
 
-      <!-- Bloque de Descripción y Detalles -->
+      <!-- Descripción del objeto -->
       <div class="card border-0 rounded-4 shadow-sm mb-4 p-4">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-3">
-            <h2 class="card-title fw-bold" style="color: #343a40">
-              {{ objeto.nombre }}
-            </h2>
+            <h2 class="card-title fw-bold text-dark">{{ objeto.nombre }}</h2>
             <span
-              class="badge rounded-pill text-uppercase py-2 px-3 fw-bold bg-{{ 'primary' if objeto.estado == 'Disponible' else 'warning' }}"
-            >
+              class="badge rounded-pill text-uppercase py-2 px-3 fw-bold
+              {% if objeto.estado == 'Disponible' %}bg-primary
+              {% elif objeto.estado == 'Reservado' %}bg-warning text-dark
+              {% else %}bg-secondary{% endif %}">
               {{ objeto.estado }}
             </span>
           </div>
 
-          <!-- Separador de secciones -->
-          <h4
-            class="mb-3 pb-2 border-bottom fw-bold"
-            style="color: var(--bs-primary)"
-          >
+          <h4 class="mb-3 pb-2 border-bottom fw-bold" style="color: var(--bs-primary)">
             <i class="fa-solid fa-file-lines me-2"></i> Descripción
           </h4>
+
           <p class="card-text lead text-muted">
             {{ objeto.descripcion or 'Sin descripción detallada disponible.' }}
           </p>
@@ -43,10 +41,7 @@ endblock %} {% block content %}
           <div class="row mt-4 pt-3 border-top">
             <div class="col-md-6">
               <h5 class="fw-bold mb-3">
-                <i
-                  class="fa-solid fa-list-check me-2"
-                  style="color: var(--bs-primary)"
-                ></i>
+                <i class="fa-solid fa-list-check me-2" style="color: var(--bs-primary)"></i>
                 Detalles del Objeto
               </h5>
               <ul class="list-unstyled fw-light small">
@@ -56,37 +51,36 @@ endblock %} {% block content %}
                 </li>
                 <li class="mb-2">
                   <i class="fa-solid fa-calendar-alt me-2 text-muted"></i>
-                  <strong>Publicado:</strong> {{
-                  objeto.fecha_publicacion.strftime('%d/%m/%Y') }}
+                  <strong>Publicado:</strong>
+                  {{ objeto.fecha_publicacion.strftime('%d/%m/%Y') }}
                 </li>
-                <!-- Puedes añadir más detalles aquí (Marca, Modelo, etc.) -->
               </ul>
             </div>
+
             <div class="col-md-6">
               <h5 class="fw-bold mb-3">
-                <i
-                  class="fa-solid fa-user-circle me-2"
-                  style="color: var(--bs-primary)"
-                ></i>
+                <i class="fa-solid fa-user-circle me-2" style="color: var(--bs-primary)"></i>
                 Propietario
               </h5>
               <div class="d-flex align-items-center">
-                <i class="fa-solid fa-user-circle fa-2x me-3 text-muted"></i>
+                <img
+                  src="{{ url_for('static', filename='img/user_anonimo.png') }}"
+                  alt="Usuario"
+                  class="rounded-circle me-3 shadow-sm"
+                  width="50"
+                  height="50"
+                />
                 <div>
-                  <strong class="d-block"
-                    >{{ objeto.usuario.nombre }} {{ objeto.usuario.apellido
-                    }}</strong
-                  >
-                  <small class="text-muted">
-                    <i class="fa-solid fa-map-marker-alt"></i> {{
-                    objeto.usuario.direccion }}
+                  <strong class="d-block">
+                    {{ objeto.usuario.nombre }} {{ objeto.usuario.apellido }}
+                  </strong>
+                  <small class="text-muted d-block">
+                    <i class="fa-solid fa-map-marker-alt"></i>
+                    {{ objeto.usuario.direccion or 'Ubicación no especificada' }}
                   </small>
-                  <a
-                    href="#"
-                    class="small d-block fw-bold"
-                    style="color: var(--bs-primary)"
-                    >Ver perfil completo</a
-                  >
+                  <a href="#" class="small fw-bold" style="color: var(--bs-primary)">
+                    Ver perfil completo
+                  </a>
                 </div>
               </div>
             </div>
@@ -94,15 +88,12 @@ endblock %} {% block content %}
         </div>
       </div>
 
-      <!-- Bloque de Opiniones -->
+      <!-- Opiniones -->
       <div class="card border-0 rounded-4 shadow-sm">
         <div class="card-body p-4 p-lg-5">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-bold mb-0">
-              <i
-                class="fa-solid fa-comments me-2"
-                style="color: var(--bs-primary)"
-              ></i>
+              <i class="fa-solid fa-comments me-2" style="color: var(--bs-primary)"></i>
               Opiniones
             </h4>
             <span class="badge bg-secondary fw-bold py-2 px-3">
@@ -110,25 +101,28 @@ endblock %} {% block content %}
             </span>
           </div>
 
-          {% if objeto.opiniones %} {% for opinion in objeto.opiniones %}
-          <div class="border-bottom pb-3 mb-4">
-            <div class="d-flex justify-content-between">
-              <strong class="fw-bold">{{ opinion.usuario.nombre }}</strong>
-              <small class="text-muted">
-                <i class="fa-solid fa-clock me-1"></i> {{
-                opinion.fecha.strftime('%d/%m/%Y') }}
-              </small>
+          {% if objeto.opiniones %}
+            {% for opinion in objeto.opiniones %}
+            <div class="border-bottom pb-3 mb-4">
+              <div class="d-flex justify-content-between">
+                <strong class="fw-bold">{{ opinion.usuario.nombre }}</strong>
+                <small class="text-muted">
+                  <i class="fa-solid fa-clock me-1"></i>
+                  {{ opinion.fecha.strftime('%d/%m/%Y') }}
+                </small>
+              </div>
+              <div class="text-warning mb-2">
+                {% for i in range(opinion.calificacion) %}
+                  <i class="fa-solid fa-star"></i>
+                {% endfor %}
+                {% for i in range(5 - opinion.calificacion) %}
+                  <i class="fa-regular fa-star"></i>
+                {% endfor %}
+              </div>
+              <p class="mb-0 text-muted">{{ opinion.comentario }}</p>
             </div>
-            <div class="text-warning mb-2">
-              {% for i in range(opinion.calificacion) %}
-              <i class="fa-solid fa-star"></i>
-              {% endfor %} {% for i in range(5 - opinion.calificacion) %}
-              <i class="fa-regular fa-star"></i>
-              {% endfor %}
-            </div>
-            <p class="mb-0 text-muted">{{ opinion.comentario }}</p>
-          </div>
-          {% endfor %} {% else %}
+            {% endfor %}
+          {% else %}
           <div class="text-center py-4 bg-light rounded-3">
             <i class="fa-regular fa-lightbulb fa-2x text-muted"></i>
             <p class="text-muted mt-2 mb-0">
@@ -140,13 +134,9 @@ endblock %} {% block content %}
       </div>
     </div>
 
-    <!-- Columna Lateral (Panel de Reserva) -->
+    <!-- Columna lateral (Reserva) -->
     <div class="col-lg-4">
-      <!-- Tarjeta de Reserva (fija en la parte superior al hacer scroll) -->
-      <div
-        class="card border-0 rounded-4 shadow-lg sticky-top p-3"
-        style="top: 100px"
-      >
+      <div class="card border-0 rounded-4 shadow-lg sticky-top p-3" style="top: 100px;">
         <div class="card-body">
           <div class="text-center mb-4 pb-3 border-bottom">
             <span class="h1 fw-bold" style="color: var(--bs-primary)">
@@ -159,34 +149,21 @@ endblock %} {% block content %}
           </div>
 
           {% if objeto.estado == 'Disponible' %}
-          <form
-            action="{{ url_for('reservas.crear_reserva', id_objeto=objeto.id_objeto) }}"
-            method="POST"
-          >
+          <form action="{{ url_for('reservas.crear_reserva', id_objeto=objeto.id_objeto) }}" method="POST">
             <div class="mb-3">
               <label class="form-label fw-bold">Fecha de inicio</label>
-              <input
-                type="date"
-                class="form-control form-control-lg rounded-3"
-                name="fecha_inicio"
-                required
-              />
+              <input type="date" class="form-control form-control-lg rounded-3" name="fecha_inicio" required />
             </div>
             <div class="mb-3">
               <label class="form-label fw-bold">Fecha de fin</label>
-              <input
-                type="date"
-                class="form-control form-control-lg rounded-3"
-                name="fecha_fin"
-                required
-              />
+              <input type="date" class="form-control form-control-lg rounded-3" name="fecha_fin" required />
             </div>
 
-            <!-- Panel de Cálculo (ReadOnly) -->
+            <!-- Panel de Cálculo -->
             <div class="py-2 border-top border-bottom mb-3">
               <div class="d-flex justify-content-between py-1">
                 <span class="text-muted small">Días de alquiler:</span>
-                <span class="fw-bold small">Calculando...</span>
+                <span class="fw-bold small" id="diasAlquiler">0 días</span>
               </div>
               <div class="d-flex justify-content-between py-1">
                 <span class="text-muted small">Tarifa de servicio:</span>
@@ -194,36 +171,23 @@ endblock %} {% block content %}
               </div>
             </div>
 
-            <!-- Costo Total -->
             <div class="d-flex justify-content-between mb-4">
               <label class="form-label h5 fw-bold mb-0">Costo Total</label>
-              <span class="h4 fw-bold mb-0" style="color: var(--bs-primary)"
-                >RD$ 0.00</span
-              >
+              <span class="h4 fw-bold mb-0" style="color: var(--bs-primary)" id="costoTotal">RD$ 0.00</span>
             </div>
 
             {% if current_user.is_authenticated %}
-            <button
-              type="submit"
-              class="btn btn-main-action w-100 btn-lg rounded-pill fw-bold"
-            >
+            <button type="submit" class="btn btn-main-action w-100 btn-lg rounded-pill fw-bold">
               <i class="fa-solid fa-calendar-check me-2"></i> Reservar Ahora
             </button>
             {% else %}
-            <a
-              href="{{ url_for('auth.login') }}"
-              class="btn btn-main-action w-100 btn-lg rounded-pill fw-bold"
-            >
-              <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Iniciar
-              Sesión para Reservar
+            <a href="{{ url_for('auth.login') }}" class="btn btn-main-action w-100 btn-lg rounded-pill fw-bold">
+              <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Iniciar Sesión para Reservar
             </a>
             {% endif %}
           </form>
           {% else %}
-          <div
-            class="alert alert-warning text-center rounded-3 fw-bold border-0"
-            role="alert"
-          >
+          <div class="alert alert-warning text-center rounded-3 fw-bold border-0" role="alert">
             <i class="fa-solid fa-triangle-exclamation fa-2x"></i><br />
             Este objeto no está disponible para reservar.
           </div>
@@ -234,42 +198,36 @@ endblock %} {% block content %}
   </div>
 </div>
 
-<!-- Script para cálculo de días y totales (ejemplo básico) -->
+<!-- Script para cálculo dinámico del total -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-      // Lógica de cálculo de fechas (placeholder, requiere más JS real)
-      const startDateInput = document.querySelector('input[name="fecha_inicio"]');
-      const endDateInput = document.querySelector('input[name="fecha_fin"]');
-      const daysInput = document.querySelector('input[value="Calculando..."]');
-      const totalInput = document.querySelector('span.h4.fw-bold[style*="var(--bs-primary)"]');
+  document.addEventListener("DOMContentLoaded", function () {
+    const startDateInput = document.querySelector('input[name="fecha_inicio"]');
+    const endDateInput = document.querySelector('input[name="fecha_fin"]');
+    const daysLabel = document.getElementById("diasAlquiler");
+    const totalLabel = document.getElementById("costoTotal");
 
-      const pricePerDay = {{ objeto.precio | tojson | safe }}; // Precio por día
-      const serviceFee = 50.00;
+    const pricePerDay = {{ objeto.precio | tojson }};
+    const serviceFee = 50.00;
 
-      function calculateTotal() {
-          const start = startDateInput.value ? new Date(startDateInput.value) : null;
-          const end = endDateInput.value ? new Date(endDateInput.value) : null;
+    function calculateTotal() {
+      const start = startDateInput.value ? new Date(startDateInput.value) : null;
+      const end = endDateInput.value ? new Date(endDateInput.value) : null;
 
-          if (start && end && start <= end) {
-              const diffTime = Math.abs(end - start);
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir el día de inicio
+      if (start && end && start <= end) {
+        const diffTime = end - start;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const total = diffDays * pricePerDay + serviceFee;
 
-              const subtotal = diffDays * pricePerDay;
-              const total = subtotal + serviceFee;
-
-              daysInput.textContent = `${diffDays} día${diffDays !== 1 ? 's' : ''}`;
-              totalInput.textContent = `RD$ ${total.toFixed(2)}`;
-          } else {
-              daysInput.textContent = "0 días";
-              totalInput.textContent = "RD$ 0.00";
-          }
+        daysLabel.textContent = `${diffDays} día${diffDays !== 1 ? 's' : ''}`;
+        totalLabel.textContent = `RD$ ${total.toFixed(2)}`;
+      } else {
+        daysLabel.textContent = "0 días";
+        totalLabel.textContent = "RD$ 0.00";
       }
+    }
 
-      startDateInput.addEventListener('change', calculateTotal);
-      endDateInput.addEventListener('change', calculateTotal);
-
-      // Inicializar al cargar
-      calculateTotal();
+    startDateInput.addEventListener("change", calculateTotal);
+    endDateInput.addEventListener("change", calculateTotal);
   });
 </script>
 {% endblock %}
