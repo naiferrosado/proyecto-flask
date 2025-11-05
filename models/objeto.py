@@ -1,4 +1,5 @@
 from extensions import db
+from datetime import date
 
 
 class Objeto(db.Model):
@@ -10,7 +11,11 @@ class Objeto(db.Model):
     estado = db.Column(db.String(20), nullable=False, default="Disponible")
     precio = db.Column(db.Numeric(10, 2), nullable=False)
     imagen = db.Column(db.String(255), nullable=False)
-    fecha_publicacion = db.Column(db.Date, nullable=False)
+    fecha_publicacion = db.Column(
+        db.Date,
+        nullable=False,
+        default=date.today,
+    )
     id_usuario = db.Column(
         db.Integer, db.ForeignKey("usuario.id_usuario"), nullable=False
     )
