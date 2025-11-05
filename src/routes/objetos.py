@@ -42,15 +42,16 @@ def crear_objeto():
 
         # ✅ Crear objeto y guardar en BD
         objeto = Objeto(
-            nombre=form.nombre.data,
-            descripcion=form.descripcion.data,
-            precio=form.precio.data,
-            estado=form.estado.data,
-            imagen=ruta_imagen,
-            fecha_publicacion=form.fecha_publicacion.data or date.today(),
-            id_usuario=current_user.id_usuario,
-            id_categoria=form.id_categoria.data,
+        nombre=form.nombre.data,
+        descripcion=form.descripcion.data,
+        precio=form.precio.data,
+        estado=form.estado.data,
+        imagen=ruta_imagen,
+        fecha_publicacion=date.today(),  # 🔹 siempre la fecha actual
+        id_usuario=current_user.id_usuario,
+        id_categoria=form.id_categoria.data,
         )
+
 
         db.session.add(objeto)
         db.session.commit()
