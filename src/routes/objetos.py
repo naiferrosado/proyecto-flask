@@ -33,7 +33,7 @@ def crear_objeto():
 
         if imagen:
             filename = secure_filename(imagen.filename)
-            upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+            upload_folder = os.path.join(current_app.root_path, "static", "uploads")
             os.makedirs(upload_folder, exist_ok=True)  # Crea la carpeta si no existe
             imagen.save(os.path.join(upload_folder, filename))
 
@@ -44,7 +44,7 @@ def crear_objeto():
             id_categoria=form.id_categoria.data,
             precio=form.precio.data,
             id_usuario=current_user.id_usuario,
-            imagen=filename  # Guarda solo el nombre del archivo o None
+            imagen=filename,  # Guarda solo el nombre del archivo o None
         )
 
         db.session.add(nuevo_objeto)
@@ -53,7 +53,7 @@ def crear_objeto():
         flash("Objeto publicado correctamente.", "success")
         return redirect(url_for("objetos.listar_objetos"))
 
-    return render_template("objetos/crear_objeto.html", form=form)
+    return render_template("objetos/crear.html", form=form)
 
 
 @objetos_bp.route("/<int:id>")
