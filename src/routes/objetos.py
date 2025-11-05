@@ -27,38 +27,33 @@ def crear_objeto():
     form.id_categoria.choices = [(c.id_categoria, c.nombre) for c in categorias]
 
     if form.validate_on_submit():
-        # ✅ Guardar la imagen subida
-        imagen_file = form.imagen.data
-        if imagen_file:
-            filename = secure_filename(imagen_file.filename)
-            upload_folder = os.path.join(current_app.root_path, "static/uploads")
-            os.makedirs(upload_folder, exist_ok=True)  # Crear carpeta si no existe
-            imagen_path = os.path.join(upload_folder, filename)
-            imagen_file.save(imagen_path)
-            # Ruta relativa para guardar en DB
-            ruta_imagen = f"uploads/{filename}"
-        else:
-            ruta_imagen = "uploads/default.jpg"
+        # Procesar imagen si se sube una
+        imagen = form.imagen.data
+        filename = None
 
-        # ✅ Crear objeto y guardar en BD
-        objeto = Objeto(
-        nombre=form.nombre.data,
-        descripcion=form.descripcion.data,
-        precio=form.precio.data,
-        estado=form.estado.data,
-        imagen=ruta_imagen,
-        fecha_publicacion=date.today(),  # 🔹 siempre la fecha actual
-        id_usuario=current_user.id_usuario,
-        id_categoria=form.id_categoria.data,
+        if imagen:
+            filename = secure_filename(imagen.filename)
+            upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+            os.makedirs(upload_folder, exist_ok=True)  # Crea la carpeta si no existe
+            imagen.save(os.path.join(upload_folder, filename))
+
+        # Crear el nuevo objeto
+        nuevo_objeto = Objeto(
+            nombre=form.nombre.data,
+            descripcion=form.descripcion.data,
+            id_categoria=form.id_categoria.data,
+            precio=form.precio.data,
+            id_usuario=current_user.id_usuario,
+            imagen=filename  # Guarda solo el nombre del archivo o None
         )
 
-
-        db.session.add(objeto)
+        db.session.add(nuevo_objeto)
         db.session.commit()
-        flash("Objeto publicado exitosamente 🟢", "success")
+
+        flash("Objeto publicado correctamente.", "success")
         return redirect(url_for("objetos.listar_objetos"))
 
-    return render_template("objetos/crear.html", form=form)
+    return render_template("objetos/crear_objeto.html", form=form)
 
 
 @objetos_bp.route("/<int:id>")
