@@ -71,7 +71,7 @@ def dashboard():
     )
 
     return render_template(
-        "admin/dashboard.html",
+        "dashboard.html",
         stats=stats,
         actividad_reciente=actividad_reciente,
         usuarios_recientes=usuarios_recientes,
