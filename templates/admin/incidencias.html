@@ -1,9 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary mb-0">
+      <i class="fa-solid fa-triangle-exclamation me-2"></i> Gestión de Incidencias
+    </h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-gauge me-1"></i> Volver al Dashboard
+    </a>
+  </div>
+
+  <!-- Filtros -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="mb-0 fw-semibold">
+      Total de incidencias: <span class="text-primary">{{ incidencias|length }}</span>
+    </p>
+
+    <form method="get" class="d-flex align-items-center">
+      <label for="orden" class="me-2 fw-semibold">Ordenar por:</label>
+      <select name="orden" id="orden" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+        <option value="desc" {% if request.args.get('orden', 'desc') == 'desc' %}selected{% endif %}>Más recientes</option>
+        <option value="asc" {% if request.args.get('orden') == 'asc' %}selected{% endif %}>Más antiguas</option>
+      </select>
+    </form>
+  </div>
+
+  <!-- Tabla de incidencias -->
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-primary">
+          <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for incidencia in incidencias %}
+          <tr>
+            <td>{{ incidencia.id_incidencia }}</td>
+            <td>{{ incidencia.descripcion }}</td>
+            <td>
+              <span class="badge 
+                {% if incidencia.estado == 'Abierta' %}bg-danger
+                {% elif incidencia.estado == 'En Proceso' %}bg-warning text-dark
+                {% else %}bg-success{% endif %}">
+                {{ incidencia.estado }}
+              </span>
+            </td>
+            <td>{{ incidencia.fecha_reporte.strftime('%d/%m/%Y') }}</td>
+            <td>{{ incidencia.usuario.nombre if incidencia.usuario else 'Desconocido' }}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#detalleModal{{ incidencia.id_incidencia }}">
+                <i class="fa-solid fa-eye"></i> Ver
+              </button>
+              {% if incidencia.estado != 'Resuelta' %}
+              <form method="post" action="{{ url_for('admin.actualizar_incidencia', id=incidencia.id_incidencia) }}" style="display:inline;">
+                <input type="hidden" name="nuevo_estado" value="Resuelta">
+                <button type="submit" class="btn btn-sm btn-success">
+                  <i class="fa-solid fa-check"></i> Cerrar
+                </button>
+              </form>
+              {% endif %}
+              {% if incidencia.estado == 'Abierta' %}
+              <form method="post" action="{{ url_for('admin.actualizar_incidencia', id=incidencia.id_incidencia) }}" style="display:inline;">
+                <input type="hidden" name="nuevo_estado" value="En Proceso">
+                <button type="submit" class="btn btn-sm btn-warning text-dark">
+                  <i class="fa-solid fa-play"></i> Abrir
+                </button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+
+          <!-- Modal de detalles -->
+          <div class="modal fade" id="detalleModal{{ incidencia.id_incidencia }}" tabindex="-1" aria-labelledby="detalleLabel{{ incidencia.id_incidencia }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content rounded-3">
+                <div class="modal-header bg-primary text-white">
+                  <h5 class="modal-title" id="detalleLabel{{ incidencia.id_incidencia }}">
+                    <i class="fa-solid fa-circle-info me-2"></i> Detalles de la Incidencia #{{ incidencia.id_incidencia }}
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
+                  <p><strong>Estado:</strong> {{ incidencia.estado }}</p>
+                  <p><strong>Fecha de reporte:</strong> {{ incidencia.fecha_reporte.strftime('%d/%m/%Y') }}</p>
+                  <p><strong>Usuario:</strong> {{ incidencia.usuario.nombre if incidencia.usuario else 'Desconocido' }}</p>
+                  <p><strong>ID de Reserva:</strong> {{ incidencia.id_reserva }}</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

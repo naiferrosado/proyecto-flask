@@ -118,13 +118,9 @@
                 role="button"
                 data-bs-toggle="dropdown"
               >
-                <img
-                  src="https://via.placeholder.com/30/87CEEB/FFFFFF?text=R"
-                  class="rounded-circle me-2"
-                  alt="Avatar"
-                  width="30"
-                  height="30"
-                />
+              <img src="{{ url_for('static', filename='img/default_user.png') }}" 
+                  alt="Avatar" class="rounded-circle me-2" width="30" height="30">
+
                 <span class="d-none d-lg-inline"
                   >{{ current_user.nombre }}</span
                 >
@@ -256,7 +252,7 @@
         </div>
         <hr class="mt-4 mb-3 border-secondary" />
         <div class="text-center small">
-          &copy; 2024 Rentflow. Todos los derechos reservados.
+          &copy; 2025 Rentflow. Todos los derechos reservados.
         </div>
       </div>
     </footer>
