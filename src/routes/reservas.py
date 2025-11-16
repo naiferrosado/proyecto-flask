@@ -34,6 +34,11 @@ def crear_reserva(id_objeto):
             flash("La fecha de inicio debe ser anterior a la fecha de fin", "error")
             return render_template("reservas/crear.html", form=form, objeto=objeto)
 
+        # Verificar que la fecha de inicio sea futura
+        if form.fecha_inicio.data < date.today():
+            flash("La fecha de inicio debe ser hoy o posterior", "error")
+            return render_template("reservas/crear.html", form=form, objeto=objeto)
+
         reserva = Reserva(
             fecha_reserva=date.today(),
             fecha_inicio=form.fecha_inicio.data,
@@ -49,7 +54,7 @@ def crear_reserva(id_objeto):
         db.session.add(reserva)
         db.session.commit()
 
-        flash("Reserva creada exitosamente", "success")
+        flash("¡Reserva creada exitosamente! Ahora procede con el pago.", "success")
         return redirect(url_for("reservas.listar_reservas"))
 
     return render_template("reservas/crear.html", form=form, objeto=objeto)
@@ -63,6 +68,11 @@ def cancelar_reserva(id):
     # Verificar que el usuario sea el dueño de la reserva
     if reserva.id_usuario != current_user.id_usuario:
         flash("No tienes permisos para cancelar esta reserva", "error")
+        return redirect(url_for("reservas.listar_reservas"))
+
+    # Solo se pueden cancelar reservas Pendientes o Activas
+    if reserva.estado not in ["Pendiente", "Activa"]:
+        flash("Solo puedes cancelar reservas pendientes o activas", "warning")
         return redirect(url_for("reservas.listar_reservas"))
 
     # Liberar el objeto

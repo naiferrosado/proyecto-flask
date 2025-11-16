@@ -118,8 +118,13 @@
                 role="button"
                 data-bs-toggle="dropdown"
               >
-              <img src="{{ url_for('static', filename='img/default_user.png') }}" 
-                  alt="Avatar" class="rounded-circle me-2" width="30" height="30">
+                <img
+                  src="{{ url_for('static', filename='img/default_user.png') }}"
+                  alt="Avatar"
+                  class="rounded-circle me-2"
+                  width="30"
+                  height="30"
+                />
 
                 <span class="d-none d-lg-inline"
                   >{{ current_user.nombre }}</span
@@ -139,7 +144,7 @@
                 <li class="dropdown-header text-muted">Administración</li>
                 <li>
                   <a class="dropdown-item" href="/admin/">
-                     <i class="fa-solid fa-chart-line me-2"></i> Dashboard
+                    <i class="fa-solid fa-chart-line me-2"></i> Dashboard
                   </a>
                 </li>
                 {% endif %}

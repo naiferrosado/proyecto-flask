@@ -1,0 +1,158 @@
+{% extends "base.html" %} {% block title %}Reservar {{ objeto.nombre }} -
+Rentflow{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card border-0 rounded-4 shadow-lg p-3 p-lg-4">
+        <div class="card-body">
+          <!-- Encabezado de la Página -->
+          <div class="text-center mb-5">
+            <i
+              class="fa-solid fa-calendar-plus fa-3x mb-3"
+              style="color: var(--bs-primary)"
+            ></i>
+            <h3 class="fw-bold mb-0">Confirmar Reserva</h3>
+            <p class="text-muted">
+              Estás a punto de reservar <strong>{{ objeto.nombre }}</strong>.
+            </p>
+          </div>
+
+          <!-- Detalles Rápidos del Objeto -->
+          <div
+            class="d-flex align-items-center mb-4 p-3 bg-light rounded-3 border"
+          >
+            <img
+              src="{{ url_for('static', filename=objeto.imagen) if objeto.imagen else 'https://placehold.co/80x80/e9ecef/495057?text=OBJ' }}"
+              class="rounded-3 me-4"
+              style="width: 80px; height: 80px; object-fit: cover"
+              alt="{{ objeto.nombre }}"
+            />
+            <div>
+              <h5 class="mb-0 fw-bold">{{ objeto.nombre }}</h5>
+              <span class="h4 fw-bold" style="color: var(--bs-primary)">
+                RD$ {{ "%.2f"|format(objeto.precio) }}
+              </span>
+              <span class="text-muted"> / día</span>
+            </div>
+          </div>
+
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <h4 class="mb-4 pb-2 border-bottom fw-bold" style="color: #343a40">
+              <i
+                class="fa-solid fa-clock me-2"
+                style="color: var(--bs-primary)"
+              ></i>
+              Periodo de Alquiler
+            </h4>
+
+            <!-- Campo Fecha de Inicio -->
+            <div class="mb-4">
+              {{ form.fecha_inicio.label(class="form-label fw-bold") }} {{
+              form.fecha_inicio(class="form-control form-control-lg rounded-3",
+              type="date", id="fechaInicio") }} {% if form.fecha_inicio.errors
+              %}
+              <div class="text-danger small mt-1">
+                {% for error in form.fecha_inicio.errors %}{{ error }}{% endfor
+                %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Campo Fecha de Fin -->
+            <div class="mb-5">
+              {{ form.fecha_fin.label(class="form-label fw-bold") }} {{
+              form.fecha_fin(class="form-control form-control-lg rounded-3",
+              type="date", id="fechaFin") }} {% if form.fecha_fin.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.fecha_fin.errors %}{{ error }}{% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Panel de Costos -->
+            <div class="py-3 px-4 mb-4 border rounded-3 bg-light">
+              <h5 class="fw-bold mb-3">Resumen de Costos</h5>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted small">Costo Diario:</span>
+                <span class="fw-bold small"
+                  >RD$ {{ "%.2f"|format(objeto.precio) }}</span
+                >
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted small">Días:</span>
+                <span class="fw-bold small" id="diasAlquiler">0 días</span>
+              </div>
+              <div class="d-flex justify-content-between py-2 mt-2">
+                <span class="h5 fw-bold mb-0">Total Estimado:</span>
+                <span
+                  class="h5 fw-bold mb-0"
+                  style="color: var(--bs-primary)"
+                  id="costoTotal"
+                  >RD$ 0.00</span
+                >
+              </div>
+              <small class="text-muted d-block mt-2">
+                <i class="fa-solid fa-info-circle me-1"></i>
+                El pago se realizará después de confirmar la reserva
+              </small>
+            </div>
+
+            <!-- Botones de Acción Final -->
+            <div class="d-grid gap-3 pt-3 border-top">
+              <button
+                type="submit"
+                class="btn btn-main-action w-100 btn-lg rounded-pill fw-bold py-3"
+              >
+                <i class="fa-solid fa-calendar-check me-2"></i> Confirmar
+                Reserva
+              </button>
+              <a
+                href="{{ url_for('objetos.detalle_objeto', id=objeto.id_objeto) }}"
+                class="btn btn-outline-secondary btn-lg rounded-pill fw-bold"
+              >
+                <i class="fa-solid fa-arrow-left me-2"></i> Volver al Objeto
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para cálculo dinámico del total -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const startDateInput = document.getElementById("fechaInicio");
+    const endDateInput = document.getElementById("fechaFin");
+    const daysLabel = document.getElementById("diasAlquiler");
+    const totalLabel = document.getElementById("costoTotal");
+
+    const pricePerDay = parseFloat("{{ objeto.precio }}");
+
+    function calculateTotal() {
+      const start = startDateInput.value
+        ? new Date(startDateInput.value)
+        : null;
+      const end = endDateInput.value ? new Date(endDateInput.value) : null;
+
+      if (start && end && start <= end) {
+        const diffTime = end - start;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const total = diffDays * pricePerDay;
+
+        daysLabel.textContent = diffDays + " día" + (diffDays !== 1 ? "s" : "");
+        totalLabel.textContent = "RD$ " + total.toFixed(2);
+      } else {
+        daysLabel.textContent = "0 días";
+        totalLabel.textContent = "RD$ 0.00";
+      }
+    }
+
+    startDateInput.addEventListener("change", calculateTotal);
+    endDateInput.addEventListener("change", calculateTotal);
+  });
+</script>
+{% endblock %}
