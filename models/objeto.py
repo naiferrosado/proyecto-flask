@@ -10,12 +10,8 @@ class Objeto(db.Model):
     descripcion = db.Column(db.String(255))
     estado = db.Column(db.String(20), nullable=False, default="Disponible")
     precio = db.Column(db.Numeric(10, 2), nullable=False)
-    imagen = db.Column(db.String(255), nullable=False)
-    fecha_publicacion = db.Column(
-        db.Date,
-        nullable=False,
-        default=date.today,
-    )
+    publicado = db.Column(db.Boolean, default=False)  # Nuevo: indica si se publica
+    fecha_publicacion = db.Column(db.Date, nullable=True)  # Fecha de publicación real
     id_usuario = db.Column(
         db.Integer, db.ForeignKey("usuario.id_usuario"), nullable=False
     )
@@ -25,3 +21,6 @@ class Objeto(db.Model):
 
     reservas = db.relationship("Reserva", backref="objeto", lazy=True)
     opiniones = db.relationship("Opinion", backref="objeto", lazy=True)
+    imagenes = db.relationship(
+        "ImagenObjeto", backref="objeto", lazy=True, cascade="all, delete-orphan"
+    )
