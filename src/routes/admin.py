@@ -92,21 +92,52 @@ def usuarios():
     return render_template("admin/usuarios.html", usuarios=usuarios_paginados)
 
 
-@admin_bp.route("/usuarios/<int:id>/suspender", methods=["POST"])
+@admin_bp.route("/usuarios/<int:id>/eliminar", methods=["POST"])
 @login_required
 @admin_required
-def suspender_usuario(id):
+def eliminar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
 
-    # No permitir suspender administradores
+    # No permitir eliminar administradores
     if usuario.id_rol == 1:
-        flash("No se puede suspender a un administrador", "error")
+        flash("No se puede eliminar a un administrador.", "error")
         return redirect(url_for("admin.usuarios"))
 
-    # Aquí implementarías la lógica de suspensión
-    # Por ejemplo: usuario.activo = False
-    flash(f"Usuario {usuario.nombre} suspendido correctamente", "success")
+    db.session.delete(usuario)
+    db.session.commit()
+
+    flash(f"Usuario {usuario.nombre} eliminado correctamente.", "success")
     return redirect(url_for("admin.usuarios"))
+
+
+@admin_bp.route("/usuarios/<int:id>")
+@login_required
+@admin_required
+def ver_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+    return render_template("admin/ver_usuario.html", usuario=usuario)
+
+
+@admin_bp.route("/usuarios/<int:id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editar_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+
+    if request.method == "POST":
+        usuario.nombre = request.form.get("nombre")
+        usuario.apellido = request.form.get("apellido")
+        usuario.correo = request.form.get("correo")
+        usuario.telefono = request.form.get("telefono")
+
+        id_rol = request.form.get("id_rol")
+        usuario.id_rol = int(id_rol) if id_rol else usuario.id_rol
+
+        db.session.commit()
+        flash("Usuario actualizado correctamente", "success")
+        return redirect(url_for("admin.usuarios"))
+
+    return render_template("admin/editar_usuario.html", usuario=usuario)
 
 
 @admin_bp.route("/categorias")

@@ -18,6 +18,7 @@ endblock %} {% block content %}
             id="searchInput"
           />
         </div>
+
         <div class="col-md-3">
           <select class="form-select" id="roleFilter">
             <option value="">Todos los roles</option>
@@ -25,6 +26,7 @@ endblock %} {% block content %}
             <option value="2">Usuarios</option>
           </select>
         </div>
+
         <div class="col-md-3">
           <select class="form-select" id="statusFilter">
             <option value="">Todos los estados</option>
@@ -32,6 +34,7 @@ endblock %} {% block content %}
             <option value="suspendido">Suspendidos</option>
           </select>
         </div>
+
         <div class="col-md-2">
           <button class="btn btn-primary w-100" onclick="filtrarUsuarios()">
             <i class="bi bi-funnel"></i> Filtrar
@@ -56,28 +59,33 @@ endblock %} {% block content %}
               <th>Acciones</th>
             </tr>
           </thead>
+
           <tbody>
             {% for usuario in usuarios.items %}
             <tr>
               <td>
                 <div class="d-flex align-items-center">
-                  <i class="bi bi-person-circle me-3 fs-4"></i>
+                  <img
+                    src="https://ui-avatars.com/api/?name={{ usuario.nombre }}+{{ usuario.apellido }}&background=0D6EFD&color=fff&rounded=true&size=48"
+                    class="rounded-circle me-3"
+                    width="48"
+                    height="48"
+                  />
                   <div>
-                    <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
-                    <br />
+                    <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong
+                    ><br />
                     <small class="text-muted"
                       >ID: {{ usuario.id_usuario }}</small
                     >
                   </div>
                 </div>
               </td>
+
               <td>
-                <div>
-                  <small>{{ usuario.correo }}</small>
-                  <br />
-                  <small class="text-muted">{{ usuario.telefono }}</small>
-                </div>
+                <small>{{ usuario.correo }}</small><br />
+                <small class="text-muted">{{ usuario.telefono }}</small>
               </td>
+
               <td>
                 <span
                   class="badge bg-{{ 'danger' if usuario.id_rol == 1 else 'primary' }}"
@@ -86,38 +94,45 @@ endblock %} {% block content %}
                   endif %}
                 </span>
               </td>
+
               <td>
                 <small>{{ usuario.fecha_registro.strftime('%d/%m/%Y') }}</small>
               </td>
+
               <td>
                 <span class="badge bg-success">
                   <i class="bi bi-check-circle"></i> Activo
                 </span>
               </td>
+
               <td>
                 <div class="btn-group btn-group-sm">
-                  <button
+                  <a
+                    href="{{ url_for('admin.ver_usuario', id=usuario.id_usuario) }}"
                     class="btn btn-outline-primary"
                     data-bs-toggle="tooltip"
                     title="Ver perfil"
                   >
                     <i class="bi bi-eye"></i>
-                  </button>
-                  <button
+                  </a>
+
+                  <a
+                    href="{{ url_for('admin.editar_usuario', id=usuario.id_usuario) }}"
                     class="btn btn-outline-warning"
                     data-bs-toggle="tooltip"
                     title="Editar usuario"
                   >
                     <i class="bi bi-pencil"></i>
-                  </button>
+                  </a>
+
                   {% if usuario.id_rol != 1 %}
                   <button
                     class="btn btn-outline-danger"
                     data-bs-toggle="tooltip"
-                    title="Suspender usuario"
-                    onclick="suspenderUsuario({{ usuario.id_usuario }})"
+                    title="Eliminar usuario"
+                    onclick="eliminarUsuario({{ usuario.id_usuario }})"
                   >
-                    <i class="bi bi-person-x"></i>
+                    <i class="bi bi-trash"></i>
                   </button>
                   {% endif %}
                 </div>
@@ -130,7 +145,6 @@ endblock %} {% block content %}
     </div>
   </div>
 
-  <!-- Paginación -->
   {% if usuarios.pages > 1 %}
   <nav class="mt-4">
     <ul class="pagination justify-content-center">
@@ -166,30 +180,31 @@ endblock %} {% block content %}
   {% endif %}
 </div>
 
-<!-- Modal para suspender usuario -->
-<div class="modal fade" id="suspenderModal" tabindex="-1">
+<!-- Modal Eliminar -->
+<div class="modal fade" id="eliminarModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Suspender Usuario</h5>
+        <h5 class="modal-title">Eliminar Usuario</h5>
         <button
           type="button"
           class="btn-close"
           data-bs-dismiss="modal"
         ></button>
       </div>
+
       <div class="modal-body">
-        <p>¿Estás seguro de que quieres suspender a este usuario?</p>
-        <p class="text-muted small">
-          El usuario no podrá acceder a la plataforma hasta que sea reactivado.
-        </p>
+        <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+        <p class="text-muted small">Esta acción es permanente.</p>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancelar
         </button>
-        <form method="POST" action="" id="suspenderForm">
-          <button type="submit" class="btn btn-danger">Suspender</button>
+
+        <form method="POST" action="" id="eliminarForm">
+          <button type="submit" class="btn btn-danger">Eliminar</button>
         </form>
       </div>
     </div>
@@ -202,7 +217,6 @@ endblock %} {% block content %}
     const role = document.getElementById("roleFilter").value;
     const status = document.getElementById("statusFilter").value;
 
-    // Construir URL con parámetros de filtro
     let url = new URL(window.location.href);
     let params = new URLSearchParams();
 
@@ -213,26 +227,25 @@ endblock %} {% block content %}
     window.location.href = url.pathname + "?" + params.toString();
   }
 
-  function suspenderUsuario(usuarioId) {
-    const modal = new bootstrap.Modal(
-      document.getElementById("suspenderModal")
-    );
-    const form = document.getElementById("suspenderForm");
-    form.action = "{{ url_for('admin.suspender_usuario', id=0) }}".replace(
+  function eliminarUsuario(id) {
+    const modal = new bootstrap.Modal(document.getElementById("eliminarModal"));
+    const form = document.getElementById("eliminarForm");
+
+    form.action = "{{ url_for('admin.eliminar_usuario', id=0) }}".replace(
       "0",
-      usuarioId
+      id
     );
     modal.show();
   }
 
-  // Inicializar tooltips
   document.addEventListener("DOMContentLoaded", function () {
     var tooltipTriggerList = [].slice.call(
       document.querySelectorAll('[data-bs-toggle="tooltip"]')
     );
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl);
+    tooltipTriggerList.map(function (el) {
+      return new bootstrap.Tooltip(el);
     });
   });
 </script>
+
 {% endblock %}
