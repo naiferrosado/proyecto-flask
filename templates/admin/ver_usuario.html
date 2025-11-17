@@ -1,0 +1,130 @@
+{% extends "base.html" %} {% block title %}Perfil de Usuario - Rentflow{%
+endblock %} {% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <!-- Avatar con iniciales -->
+        <img
+          src="https://ui-avatars.com/api/?name={{ usuario.nombre }}+{{ usuario.apellido }}&background=0D6EFD&color=fff&rounded=true&size=80"
+          class="rounded-circle me-4"
+          width="80"
+          height="80"
+        />
+
+        <div>
+          <h3 class="mb-0">{{ usuario.nombre }} {{ usuario.apellido }}</h3>
+          <small class="text-muted">ID: {{ usuario.id_usuario }}</small>
+        </div>
+      </div>
+
+      <hr />
+
+      <h5 class="mb-3">
+        <i class="bi bi-person-badge"></i> Información personal
+      </h5>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Nombre:</strong> {{ usuario.nombre }}
+        </div>
+        <div class="col-md-4">
+          <strong>Apellido:</strong> {{ usuario.apellido }}
+        </div>
+        <div class="col-md-4">
+          <strong>Rol:</strong>
+          {% if usuario.id_rol == 1 %}
+          <span class="badge bg-danger">Administrador</span>
+          {% else %}
+          <span class="badge bg-primary">Usuario</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <h5 class="mb-3 mt-4"><i class="bi bi-envelope"></i> Contacto</h5>
+
+      <div class="row mb-3">
+        <div class="col-md-4"><strong>Email:</strong> {{ usuario.correo }}</div>
+        <div class="col-md-4">
+          <strong>Teléfono:</strong> {{ usuario.telefono }}
+        </div>
+        <div class="col-md-4">
+          <strong>Fecha Registro:</strong>
+          {{ usuario.fecha_registro.strftime('%d/%m/%Y') }}
+        </div>
+      </div>
+
+      <div class="mt-4 d-flex gap-2">
+        <a
+          href="{{ url_for('admin.editar_usuario', id=usuario.id_usuario) }}"
+          class="btn btn-primary"
+        >
+          <i class="bi bi-pencil"></i> Editar
+        </a>
+
+        {% if usuario.id_rol != 1 %}
+        <button
+          class="btn btn-danger"
+          onclick="eliminarUsuario({{ usuario.id_usuario }})"
+        >
+          <i class="bi bi-trash"></i> Eliminar
+        </button>
+        {% endif %}
+
+        <a href="{{ url_for('admin.usuarios') }}" class="btn btn-secondary">
+          Volver
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmación Eliminar -->
+<div class="modal fade" id="eliminarModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Eliminar Usuario</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        ¿Seguro que deseas eliminar este usuario? Esta acción es permanente.
+      </div>
+
+      <div class="modal-footer">
+        <form method="POST" id="eliminarForm">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script corregido -->
+<script>
+  function eliminarUsuario(id) {
+    const modal = new bootstrap.Modal(document.getElementById("eliminarModal"));
+    const form = document.getElementById("eliminarForm");
+
+    form.action = "{{ url_for('admin.eliminar_usuario', id=0) }}".replace(
+      "0",
+      id
+    );
+
+    modal.show();
+  }
+</script>
+
+{% endblock %}

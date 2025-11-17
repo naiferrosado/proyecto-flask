@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Editar Usuario - Rentflow{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <h3 class="mb-4"><i class="bi bi-pencil-square"></i> Editar Usuario</h3>
+
+      <form method="POST">
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-control" value="{{ usuario.nombre }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Apellido</label>
+            <input type="text" name="apellido" class="form-control" value="{{ usuario.apellido }}" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Correo</label>
+            <input type="email" name="correo" class="form-control" value="{{ usuario.correo }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="text" name="telefono" class="form-control" value="{{ usuario.telefono }}">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Rol</label>
+          <select name="id_rol" class="form-select">
+            <option value="1" {% if usuario.id_rol == 1 %}selected{% endif %}>Administrador</option>
+            <option value="2" {% if usuario.id_rol == 2 %}selected{% endif %}>Usuario</option>
+          </select>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check2-circle"></i> Guardar cambios
+          </button>
+          <a href="{{ url_for('admin.ver_usuario', id=usuario.id_usuario) }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
