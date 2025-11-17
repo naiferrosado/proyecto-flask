@@ -1,0 +1,66 @@
+{% extends "base.html" %} {% block title %}Detalle de Reserva{% endblock %} {%
+block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-success text-white rounded-top-4">
+      <h4 class="mb-0">
+        <i class="bi bi-calendar-check"></i> Detalle de la Reserva
+      </h4>
+    </div>
+
+    <div class="card-body">
+      <h5 class="fw-bold mb-3">Objeto Reservado</h5>
+      <p class="mb-1"><strong>Nombre:</strong> {{ objeto.nombre }}</p>
+      <p class="mb-3"><strong>Descripción:</strong> {{ objeto.descripcion }}</p>
+
+      <hr />
+
+      <h5 class="fw-bold mb-3">Información de la Reserva</h5>
+      <p class="mb-1">
+        <strong>Fecha de Inicio:</strong> {{ reserva.fecha_inicio }}
+      </p>
+      <p class="mb-1"><strong>Fecha de Fin:</strong> {{ reserva.fecha_fin }}</p>
+
+      <p class="mb-1">
+        <strong>Estado:</strong>
+        {% if reserva.estado == "Pendiente" %}
+        <span class="badge bg-warning text-dark">Pendiente</span>
+        {% elif reserva.estado == "Activa" %}
+        <span class="badge bg-success">Activa</span>
+        {% elif reserva.estado == "Cancelada" %}
+        <span class="badge bg-danger">Cancelada</span>
+        {% else %}
+        <span class="badge bg-secondary">{{ reserva.estado }}</span>
+        {% endif %}
+      </p>
+
+      <hr />
+
+      <div class="d-flex gap-2 mt-3">
+        <a
+          href="{{ url_for('reservas.listar_reservas') }}"
+          class="btn btn-secondary"
+        >
+          <i class="bi bi-arrow-left"></i> Volver
+        </a>
+
+        {% if reserva.estado == "Pendiente" %}
+        <a
+          href="{{ url_for('pagos.pagar_reserva', id_reserva=reserva.id_reserva) }}"
+          class="btn btn-success"
+        >
+          <i class="bi bi-credit-card"></i> Pagar
+        </a>
+        {% endif %} {% if reserva.estado in ["Pendiente", "Activa"] %}
+        <a
+          href="{{ url_for('reservas.cancelar_reserva', id=reserva.id_reserva) }}"
+          class="btn btn-danger"
+        >
+          <i class="bi bi-x-circle"></i> Cancelar
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

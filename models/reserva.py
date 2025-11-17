@@ -9,6 +9,7 @@ class Reserva(db.Model):
     fecha_inicio = db.Column(db.Date, nullable=False)
     fecha_fin = db.Column(db.Date, nullable=False)
     estado = db.Column(db.String(20), nullable=False, default="Pendiente")
+
     id_usuario = db.Column(
         db.Integer, db.ForeignKey("usuario.id_usuario"), nullable=False
     )
