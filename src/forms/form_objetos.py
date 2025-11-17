@@ -44,7 +44,6 @@ class ObjetoForm(FlaskForm):
     imagen = FileField(
         "Imagen del Objeto",
         validators=[
-            FileRequired(message="Debes subir una imagen."),
             FileAllowed(
                 ["jpg", "jpeg", "png", "gif"],
                 "Solo se permiten imágenes (JPG, PNG o GIF).",
