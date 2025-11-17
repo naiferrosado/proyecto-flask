@@ -99,6 +99,9 @@
             >
               <i class="fa-solid fa-calendar-check me-1"></i> Mis Reservas
             </a>
+            <a class="nav-link" href="{{ url_for('pagos.historial_pagos') }}">
+              <i class="fa-solid fa-credit-card me-1"></i> Mis Pagos
+            </a>
             {% endif %}
           </div>
 
@@ -177,8 +180,6 @@
       </div>
     </nav>
 
-    ---
-
     <div class="container mt-4">
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
@@ -201,8 +202,6 @@
     </div>
 
     <main class="container py-4">{% block content %}{% endblock %}</main>
-
-    ---
 
     <footer class="footer-custom mt-5 py-5">
       <div class="container">
