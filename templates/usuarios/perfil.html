@@ -7,12 +7,23 @@ block content %}
       <!-- Tarjeta Principal de Perfil -->
       <div class="card border-0 rounded-4 shadow-lg mb-4">
         <div class="card-body text-center p-4">
+          <!-- AVATAR IMPLEMENTADO -->
           <div class="mb-3">
-            <i
-              class="fa-solid fa-circle-user"
-              style="font-size: 4rem; color: #ced4da"
-            ></i>
+            {% if usuario.avatar %}
+            <img
+              src="{{ url_for('static', filename='uploads/avatars/' ~ usuario.avatar) }}"
+              class="rounded-circle shadow-sm"
+              style="width: 120px; height: 120px; object-fit: cover"
+            />
+            {% else %}
+            <img
+              src="https://ui-avatars.com/api/?name={{ (usuario.nombre ~ ' ' ~ usuario.apellido)|urlencode }}&background=random&rounded=true&size=128"
+              class="rounded-circle shadow-sm"
+              style="width: 120px; height: 120px; object-fit: cover"
+            />
+            {% endif %}
           </div>
+
           <h4 class="fw-bold">{{ usuario.nombre }} {{ usuario.apellido }}</h4>
           <p class="text-muted small mb-3">{{ usuario.correo }}</p>
 
@@ -123,6 +134,7 @@ block content %}
             <i class="fa-solid fa-plus me-1"></i> Nuevo
           </a>
         </div>
+
         <div class="card-body pt-3">
           {% if usuario.objetos %}
           <div class="table-responsive">

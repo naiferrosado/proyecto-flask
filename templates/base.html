@@ -127,12 +127,18 @@
                 role="button"
                 data-bs-toggle="dropdown"
               >
+                {% set avatar = ( url_for('static', filename='uploads/usuarios/'
+                + current_user.foto) if current_user.foto else
+                'https://ui-avatars.com/api/?name=' ~
+                current_user.nombre|replace(' ', '+') ~
+                '&background=random&color=fff&rounded=true&size=64' ) %}
+
                 <img
-                  src="{{ url_for('static', filename='img/default_user.png') }}"
+                  src="{{ avatar }}"
                   alt="Avatar"
-                  class="rounded-circle me-2"
-                  width="30"
-                  height="30"
+                  class="rounded-circle me-2 shadow-sm"
+                  width="34"
+                  height="34"
                 />
 
                 <span class="d-none d-lg-inline"
