@@ -14,18 +14,18 @@ pagos_bp = Blueprint("pagos", __name__)
 def procesar_pago(id_reserva):
     reserva = Reserva.query.get_or_404(id_reserva)
 
-    # Verificar que la reserva pertenezca al usuario
+    # Validar que la reserva sea del usuario actual
     if reserva.id_usuario != current_user.id_usuario:
         flash("No tienes permisos para pagar esta reserva", "error")
         return redirect(url_for("reservas.listar_reservas"))
 
     form = PagoForm()
 
-    if form.validate_on_submit():
-        # Calcular el monto basado en los días de reserva
-        dias = (reserva.fecha_fin - reserva.fecha_inicio).days
-        monto_total = dias * reserva.objeto.precio
+    # Calcular el monto siempre (para mostrarlo)
+    dias = (reserva.fecha_fin - reserva.fecha_inicio).days
+    monto_total = dias * float(reserva.objeto.precio)
 
+    if form.validate_on_submit():
         pago = Pago(
             monto=monto_total,
             fecha_pago=date.today(),
@@ -34,7 +34,7 @@ def procesar_pago(id_reserva):
             id_reserva=id_reserva,
         )
 
-        # Actualizar estado de la reserva
+        # Cambiar reserva a Confirmada
         reserva.estado = "Confirmada"
 
         db.session.add(pago)
@@ -42,10 +42,6 @@ def procesar_pago(id_reserva):
 
         flash("Pago procesado exitosamente", "success")
         return redirect(url_for("reservas.listar_reservas"))
-
-    # Calcular monto para mostrar en el template
-    dias = (reserva.fecha_fin - reserva.fecha_inicio).days
-    monto_total = dias * reserva.objeto.precio
 
     return render_template(
         "pagos/procesar.html", form=form, reserva=reserva, monto_total=monto_total
@@ -55,7 +51,6 @@ def procesar_pago(id_reserva):
 @pagos_bp.route("/historial")
 @login_required
 def historial_pagos():
-    # Obtener pagos de las reservas del usuario
     pagos = (
         Pago.query.join(Reserva)
         .filter(Reserva.id_usuario == current_user.id_usuario)

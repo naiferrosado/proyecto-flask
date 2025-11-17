@@ -85,3 +85,18 @@ def cancelar_reserva(id):
     db.session.commit()
     flash("Reserva cancelada exitosamente", "success")
     return redirect(url_for("reservas.listar_reservas"))
+
+
+@reservas_bp.route("/detalle/<int:id>")
+@login_required
+def detalle(id):
+    reserva = Reserva.query.get_or_404(id)
+
+    # Validar si pertenece al usuario
+    if reserva.id_usuario != current_user.id_usuario:
+        flash("No tienes permiso para ver esta reserva", "error")
+        return redirect(url_for("reservas.listar_reservas"))
+
+    objeto = Objeto.query.get(reserva.id_objeto)
+
+    return render_template("reservas/detalle.html", reserva=reserva, objeto=objeto)
