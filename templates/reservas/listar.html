@@ -1,7 +1,8 @@
 {% extends "base.html" %} {% block title %}Mis Reservas - Rentflow{% endblock %}
 {% block content %}
+
 <div class="container py-5">
-  <!-- Encabezado de la Página -->
+  <!-- Encabezado -->
   <div class="row mb-5">
     <div class="col-12">
       <h1 class="h2 fw-bold" style="color: #343a40">
@@ -12,12 +13,12 @@
         Mis Reservas
       </h1>
       <p class="text-muted lead">
-        Revisa el estado de los objetos que has alquilado.
+        Revisa el estado de los objetos que has alquilado y realiza el pago.
       </p>
     </div>
   </div>
 
-  <!-- Tarjeta Contenedora de Reservas -->
+  <!-- Contenedor -->
   <div class="card border-0 rounded-4 shadow-lg p-lg-3">
     <div class="card-body">
       {% if reservas %}
@@ -25,17 +26,17 @@
         <table class="table table-hover align-middle">
           <thead>
             <tr class="small text-uppercase">
-              <th class="border-top-0">Objeto</th>
-              <th class="border-top-0">Fechas</th>
-              <th class="border-top-0">Estado</th>
-              <th class="border-top-0">Fecha Reserva</th>
-              <th class="border-top-0 text-end">Acciones</th>
+              <th>Objeto</th>
+              <th>Fechas</th>
+              <th>Estado</th>
+              <th>Fecha Reserva</th>
+              <th class="text-end">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {% for reserva in reservas %}
             <tr>
-              <!-- Columna 1: Objeto y Categoría -->
+              <!-- Objeto -->
               <td>
                 <div class="d-flex align-items-center">
                   <img
@@ -45,19 +46,19 @@
                   />
                   <div>
                     <a
-                      href="{{ url_for('objetos.detalle_objeto', id=reserva.id_objeto) }}"
+                      href="{{ url_for('objetos.detalle_objeto', id=reserva.objeto.id_objeto) }}"
                       class="text-dark fw-bold text-decoration-none d-block"
                     >
                       {{ reserva.objeto.nombre }}
                     </a>
-                    <small class="text-muted"
-                      >{{ reserva.objeto.categoria.nombre }}</small
-                    >
+                    <small class="text-muted">
+                      {{ reserva.objeto.categoria.nombre }}
+                    </small>
                   </div>
                 </div>
               </td>
 
-              <!-- Columna 2: Fechas de Alquiler -->
+              <!-- Fechas -->
               <td>
                 <span class="d-block small fw-bold text-dark">
                   {{ reserva.fecha_inicio.strftime('%d/%m/%Y') }}
@@ -67,11 +68,12 @@
                 </span>
               </td>
 
-              <!-- Columna 3: Estado -->
+              <!-- Estado -->
               <td>
                 {% set status_class = { 'Pendiente': 'warning', 'Activa':
-                'primary', 'Completada': 'success', 'Cancelada': 'danger'
-                }.get(reserva.estado, 'secondary') %}
+                'primary', 'Confirmada': 'success', 'Completada': 'success',
+                'Cancelada': 'danger' }.get(reserva.estado, 'secondary') %}
+
                 <span
                   class="badge bg-{{ status_class }} text-uppercase py-2 px-3 fw-bold"
                 >
@@ -79,25 +81,52 @@
                 </span>
               </td>
 
-              <!-- Columna 4: Fecha de la Reserva -->
+              <!-- Fecha de reserva -->
               <td>
-                <small class="text-muted"
-                  >{{ reserva.fecha_reserva.strftime('%d/%m/%Y') }}</small
-                >
+                <small class="text-muted">
+                  {{ reserva.fecha_reserva.strftime('%d/%m/%Y') }}
+                </small>
               </td>
 
-              <!-- Columna 5: Acciones -->
+              <!-- Acciones -->
               <td class="text-end">
-                {% if reserva.estado in ['Pendiente', 'Activa'] %}
+                {% if reserva.estado == 'Pendiente' %}
+
+                <!-- Botón Pagar -->
+                <a
+                  href="{{ url_for('pagos.procesar_pago', id_reserva=reserva.id_reserva) }}"
+                  class="btn btn-sm btn-success rounded-pill me-2"
+                  data-bs-toggle="tooltip"
+                  title="Realizar Pago"
+                >
+                  <i class="fa-solid fa-credit-card"></i>
+                </a>
+
+                <!-- Botón Cancelar -->
                 <a
                   href="{{ url_for('reservas.cancelar_reserva', id=reserva.id_reserva) }}"
                   class="btn btn-sm btn-outline-danger rounded-pill"
                   data-bs-toggle="tooltip"
-                  data-bs-placement="top"
                   title="Cancelar Reserva"
                 >
                   <i class="fa-solid fa-times"></i>
                 </a>
+
+                {% elif reserva.estado == 'Confirmada' or reserva.estado ==
+                'Activa' %}
+
+                <span class="text-muted small me-2 fw-bold text-success">
+                  Pagado ✓
+                </span>
+
+                <a
+                  href="{{ url_for('reservas.cancelar_reserva', id=reserva.id_reserva) }}"
+                  class="btn btn-sm btn-outline-danger rounded-pill"
+                  title="Cancelar Reserva"
+                >
+                  <i class="fa-solid fa-times"></i>
+                </a>
+
                 {% else %}
                 <span class="text-muted small">Finalizado</span>
                 {% endif %}
@@ -109,7 +138,7 @@
       </div>
 
       {% else %}
-      <!-- Estado Vacío (Empty State) -->
+      <!-- Estado vacío -->
       <div class="text-center py-5 bg-light rounded-3">
         <i class="fa-solid fa-inbox fa-3x text-muted"></i>
         <h4 class="text-muted mt-3 fw-bold">Aún no tienes reservas</h4>
@@ -127,4 +156,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
