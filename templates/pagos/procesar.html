@@ -1,9 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Rentflow - Procesar Pago de Reserva
+#{{ reserva.id_reserva }}{% endblock %} {% block content %}
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Resumen -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="mb-4 d-flex align-items-center">
+            <span class="text-success me-2">
+              <i class="bi bi-credit-card"></i>
+            </span>
+            Resumen de la Reserva
+          </h3>
+
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Objeto:</strong>
+              <span>{{ reserva.objeto.nombre }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Propietario:</strong>
+              <span
+                >{{ reserva.objeto.usuario.nombre }} {{
+                reserva.objeto.usuario.apellido }}</span
+              >
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Días de alquiler:</strong>
+              <span>
+                {{ (reserva.fecha_fin - reserva.fecha_inicio).days }} ({{
+                reserva.fecha_inicio.strftime('%d/%m/%Y') }} – {{
+                reserva.fecha_fin.strftime('%d/%m/%Y') }})
+              </span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Precio diario:</strong>
+              <span>RD$ {{ "{:,.2f}".format(reserva.objeto.precio) }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between fs-4">
+              <strong>Monto Total:</strong>
+              <span class="text-success fw-bold">
+                RD$ {{ "{:,.2f}".format(monto_total) }}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pago -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="mb-4">Procesar Pago</h3>
+
+          <form
+            method="POST"
+            action="{{ url_for('pagos.procesar_pago', id_reserva=reserva.id_reserva) }}"
+          >
+            {{ form.hidden_tag() }}
+
+            <!-- Método -->
+            <div class="mb-3">
+              <label class="form-label">{{ form.metodo.label }}</label>
+              {{ form.metodo(class="form-select") }} {% for error in
+              form.metodo.errors %}
+              <small class="text-danger">{{ error }}</small>
+              {% endfor %}
+            </div>
+
+            <!-- Número tarjeta -->
+            <div class="mb-3">
+              <label class="form-label">Número de Tarjeta (Simulación)</label>
+              <input
+                type="text"
+                class="form-control"
+                name="tarjeta"
+                placeholder="XXXX XXXX XXXX XXXX"
+                required
+              />
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha Expiración</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="expiracion"
+                  placeholder="MM/AA"
+                  required
+                />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">CVV</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="cvv"
+                  placeholder="XXX"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+              Pagar Ahora
+            </button>
+
+            <p class="text-center text-muted small mt-3">
+              Transacción simulada. Ley 172-13 de Protección de Datos
+              Personales.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

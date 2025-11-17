@@ -1,9 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+{% extends "base.html" %} {% block title %}Rentflow - Historial de Pagos{%
+endblock %} {% block content %}
+
+<div class="card shadow-lg border-0">
+  <div class="card-body p-5">
+    <h1 class="h3 fw-bold text-dark border-bottom pb-3 mb-4">
+      <i class="fa-solid fa-credit-card me-2 text-success"></i>
+      Historial de Pagos Realizados
+    </h1>
+
+    {% if pagos %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID Pago</th>
+            <th>Reserva #</th>
+            <th>Objeto Alquilado</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Fecha de Pago</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for pago in pagos %}
+          <tr>
+            <td class="fw-semibold">{{ pago.id_pago }}</td>
+
+            <td>{{ pago.id_reserva }}</td>
+
+            <td>
+              <a
+                href="{{ url_for('objetos.detalle_objeto', id=pago.reserva.objeto.id_objeto) }}"
+                class="text-primary fw-semibold text-decoration-none"
+              >
+                {{ pago.reserva.objeto.nombre }}
+              </a>
+            </td>
+
+            <td class="fw-bold">RD$ {{ "{:,.2f}".format(pago.monto) }}</td>
+
+            <td>{{ pago.metodo }}</td>
+
+            <td>{{ pago.fecha_pago.strftime('%d/%m/%Y') }}</td>
+
+            <td>
+              {% if pago.estado == "Completado" %}
+              <span class="badge bg-success">Completado</span>
+              {% elif pago.estado == "Pendiente" %}
+              <span class="badge bg-warning text-dark">Pendiente</span>
+              {% else %}
+              <span class="badge bg-danger">Fallido</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <a
+                href="{{ url_for('reservas.detalle', id=pago.id_reserva) }}"
+                class="btn btn-sm btn-outline-primary"
+              >
+                Ver Reserva
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <div
+      class="text-center p-5 border border-2 border-dashed rounded-3 bg-light"
+    >
+      <i class="fa-solid fa-receipt fa-3x text-secondary mb-3"></i>
+      <p class="text-muted fs-5">
+        Aún no has realizado ningún pago. ¡Empieza a alquilar!
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
