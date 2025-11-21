@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from extensions import db
 from models.usuario import Usuario
 from src.forms.form_usuarios import UsuarioForm
+from src.forms.form_usuarios import EditarPerfilForm
 from flask_wtf.csrf import validate_csrf
 from werkzeug.security import generate_password_hash
 
@@ -18,7 +19,7 @@ def perfil():
 @usuarios_bp.route("/editar", methods=["GET", "POST"])
 @login_required
 def editar_perfil():
-    form = UsuarioForm(obj=current_user)
+    form = EditarPerfilForm(obj=current_user)
 
     if form.validate_on_submit():
         # actualizar campos normales
@@ -71,7 +72,7 @@ def editar_perfil():
                         pw_field = None
 
                     if pw_field:
-                        db.session.query(Usuario).filter_by(id=current_user.id).update({pw_field: hashed}, synchronize_session=False)
+                        db.session.query(Usuario).filter_by(id_usuario=current_user.id_usuario).update({pw_field: hashed}, synchronize_session=False)
                         updated = True
                     else:
                         # último recurso: intentar campos comunes en el objeto

@@ -78,6 +78,14 @@ class LoginForm(FlaskForm):
     )
     submit = SubmitField("Iniciar Sesión")
 
+# formulario para editar perfil
+class EditarPerfilForm(FlaskForm):
+    nombre = StringField("Nombre", validators=[DataRequired(), Length(max=50)])
+    apellido = StringField("Apellido", validators=[DataRequired(), Length(max=50)])
+    telefono = StringField("Teléfono", validators=[DataRequired(), Length(max=15)])
+    direccion = StringField("Dirección", validators=[DataRequired(), Length(max=100)])
+    correo = StringField("Correo", validators=[Email(), Length(max=100)])
+    submit = SubmitField("Guardar cambios")
 
 class RegistrationForm(FlaskForm):
     nombre = StringField(
