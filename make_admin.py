@@ -8,7 +8,7 @@ from models.usuario import Usuario
 
 app = create_app()
 with app.app_context():
-    usuario = Usuario.query.filter_by(correo="naifer@gmail.com").first()
+    usuario = Usuario.query.filter_by(correo="rickypega48@gmail.com").first()
     if usuario:
         usuario.id_rol = 1
         db.session.commit()
