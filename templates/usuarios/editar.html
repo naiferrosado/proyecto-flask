@@ -18,7 +18,7 @@
             </p>
           </div>
 
-          <form method="POST">
+          <form method="POST" id="editarPerfilForm">
             {{ form.hidden_tag() }}
 
             <!-- Sección 1: Información Personal -->
@@ -114,20 +114,37 @@
               3. Seguridad (Contraseña)
             </h4>
 
-            <div class="mb-5">
-              {{ form.contrasena.label(class="form-label fw-bold") }} {{
-              form.contrasena(class="form-control form-control-lg rounded-3",
-              placeholder="Dejar en blanco para mantener la contraseña actual")
-              }}
-              <div class="form-text">
-                La contraseña debe tener al menos 6 caracteres.
+            <!-- Botón para mostrar caja de verificación de contraseña -->
+            <div class="mb-3">
+              <button type="button" id="btnTogglePwd" class="btn btn-outline-primary btn-lg rounded-pill">
+                <i class="fa-solid fa-key me-2"></i> Cambiar contraseña
+              </button>
+            </div>
+
+            <!-- Área desplegable: verificar contraseña actual -->
+            <div id="pwdVerifyArea" class="mt-3" style="display: none;">
+              <label class="form-label fw-bold">Contraseña actual</label>
+              <div class="input-group mb-2">
+                <input name="current_password" id="current_password" type="password" class="form-control form-control-lg rounded-3" placeholder="Ingrese su contraseña actual">
+                <button type="button" id="btnVerifyPwd" class="btn btn-secondary">Verificar</button>
               </div>
-              {% if form.contrasena.errors %}
-              <div class="text-danger small mt-1">
-                {% for error in form.contrasena.errors %} {{ error }} {% endfor
-                %}
+              <!-- hidden field to ensure backend receives the verified password even if the visible area is hidden -->
+              <input type="hidden" name="current_password_verified" id="current_password_verified" value="">
+              <div id="pwdVerifyAlert" style="display:none;"></div>
+            </div>
+
+            <!-- Campos para nueva contraseña (se muestran sólo si la verificación fue exitosa) -->
+            <div id="newPwdArea" style="display: none;" class="mt-3">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Nueva contraseña</label>
+                <input name="new_password" id="new_password" type="password" class="form-control form-control-lg rounded-3" placeholder="Nueva contraseña (mínimo 6 caracteres)">
+                <div id="newPwdFeedback" class="form-text text-danger" style="display:none;"></div>
               </div>
-              {% endif %}
+              <div class="mb-4">
+                <label class="form-label fw-bold">Confirmar nueva contraseña</label>
+                <input name="confirm_password" id="confirm_password" type="password" class="form-control form-control-lg rounded-3" placeholder="Repita la nueva contraseña">
+                <div id="confirmPwdFeedback" class="form-text text-danger" style="display:none;"></div>
+              </div>
             </div>
 
             <!-- Botones de Acción Final -->
@@ -141,6 +158,7 @@
               <!-- Botón de Envío Principal -->
               <button
                 type="submit"
+                id="saveBtn"
                 class="btn btn-main-action btn-lg text-white fw-bold rounded-pill px-5"
               >
                 <i class="fa-solid fa-save me-2"></i> Guardar Cambios
@@ -152,4 +170,182 @@
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  const btnToggle = document.getElementById('btnTogglePwd');
+  const verifyArea = document.getElementById('pwdVerifyArea');
+  const verifyBtn = document.getElementById('btnVerifyPwd');
+  const currentPwd = document.getElementById('current_password');
+  const alertBox = document.getElementById('pwdVerifyAlert');
+  const newPwdArea = document.getElementById('newPwdArea');
+
+  const newPwdInput = document.getElementById('new_password');
+  const confirmPwdInput = document.getElementById('confirm_password');
+  const newPwdFeedback = document.getElementById('newPwdFeedback');
+  const confirmPwdFeedback = document.getElementById('confirmPwdFeedback');
+  const saveBtn = document.getElementById('saveBtn');
+  const editarForm = document.getElementById('editarPerfilForm');
+
+  // estado local
+  let verifiedCurrentPassword = null;
+  let newValid = false;
+  let confirmValid = false;
+
+  // lista de contraseñas fáciles a bloquear (puedes extenderla)
+  const easyPasswords = ['123456','12345678','password','qwerty','abcdef','111111'];
+
+  function updateSaveButtonState() {
+    // Si no se está cambiando contraseña, mantener habilitado
+    // Si se inició cambio de contraseña, habilitar sólo cuando todo válido
+    if (!verifyArea.style.display || verifyArea.style.display === 'none') {
+      // Si no se abrió el proceso, habilitar normal
+      // pero si verifiedCurrentPassword is set and newPwdArea visible => require valid flags
+      if (newPwdArea.style.display === 'block') {
+        saveBtn.disabled = !(newValid && confirmValid && verifiedCurrentPassword);
+      } else {
+        saveBtn.disabled = false;
+      }
+    } else {
+      // si el área de verificación está visible significa proceso iniciado -> deshabilitar hasta confirmar
+      saveBtn.disabled = true;
+    }
+  }
+
+  // Toggle: iniciar proceso de cambiar contraseña
+  btnToggle.addEventListener('click', () => {
+    const willShow = verifyArea.style.display === 'none' ? 'block' : 'none';
+    verifyArea.style.display = willShow;
+    // al abrir el proceso de cambio, deshabilitar guardar
+    if (willShow === 'block') {
+      saveBtn.disabled = true;
+      // reset estados
+      alertBox.style.display = 'none';
+      // clear new-area and feedbacks
+      newPwdArea.style.display = 'none';
+      newPwdInput.value = '';
+      confirmPwdInput.value = '';
+      newPwdFeedback.style.display = 'none';
+      confirmPwdFeedback.style.display = 'none';
+      newValid = false; confirmValid = false;
+      verifiedCurrentPassword = null;
+    } else {
+      // si se cierra el proceso, reactivar guardar
+      saveBtn.disabled = false;
+      alertBox.style.display = 'none';
+    }
+  });
+
+  verifyBtn.addEventListener('click', async () => {
+    alertBox.style.display = 'none';
+    const url = "{{ url_for('usuarios.verificar_contrasena') }}";
+    const csrf = document.querySelector('input[name="csrf_token"]')?.value || '';
+
+    const fd = new FormData();
+    fd.append('contrasena', currentPwd.value || '');
+    fd.append('csrf_token', csrf);
+
+    try {
+      const res = await fetch(url, { method: 'POST', body: fd, credentials: 'same-origin' });
+      if (!res.ok) throw new Error('error');
+      const data = await res.json();
+      if (data.valid) {
+        // guardar la contraseña actual verificada para validaciones locales
+        verifiedCurrentPassword = currentPwd.value || '';
+        // también guardarla en el hidden para el envío del form
+        document.getElementById('current_password_verified').value = verifiedCurrentPassword;
+        // mostrar campos para nueva contraseña
+        newPwdArea.style.display = 'block';
+        verifyArea.style.display = 'none';
+        newPwdInput.focus();
+        updateSaveButtonState();
+      } else {
+        // limpiar input y mostrar alerta
+        currentPwd.value = '';
+        alertBox.innerHTML = '<div class="alert alert-danger py-2">La contraseña no es válida</div>';
+        alertBox.style.display = 'block';
+        verifiedCurrentPassword = null;
+        updateSaveButtonState();
+      }
+    } catch (e) {
+      alertBox.innerHTML = '<div class="alert alert-danger py-2">Error al verificar contraseña</div>';
+      alertBox.style.display = 'block';
+      verifiedCurrentPassword = null;
+      updateSaveButtonState();
+    }
+  });
+
+  // validación en tiempo real para nueva contraseña
+  newPwdInput.addEventListener('input', () => {
+    const v = newPwdInput.value || '';
+    newValid = true;
+    let msg = '';
+
+    if (v.length < 6) {
+      newValid = false;
+      msg = 'La contraseña debe tener al menos 6 caracteres.';
+    } else if (easyPasswords.includes(v.toLowerCase())) {
+      newValid = false;
+      msg = 'Contraseña demasiado fácil.';
+    } else if (verifiedCurrentPassword && v === verifiedCurrentPassword) {
+      newValid = false;
+      msg = 'La nueva contraseña no puede ser igual a la anterior.';
+    }
+
+    if (!newValid) {
+      newPwdFeedback.textContent = msg;
+      newPwdFeedback.style.display = 'block';
+    } else {
+      newPwdFeedback.style.display = 'none';
+    }
+
+    // actualizar confirm validation si ya hay texto
+    if (confirmPwdInput.value) {
+      confirmPwdInput.dispatchEvent(new Event('input'));
+    }
+
+    updateSaveButtonState();
+  });
+
+  // validación en tiempo real para confirmación
+  confirmPwdInput.addEventListener('input', () => {
+    const a = newPwdInput.value || '';
+    const b = confirmPwdInput.value || '';
+    if (!b) {
+      confirmPwdFeedback.style.display = 'none';
+      confirmValid = false;
+    } else if (a !== b) {
+      confirmPwdFeedback.textContent = 'Las contraseñas no coinciden.';
+      confirmPwdFeedback.style.display = 'block';
+      confirmValid = false;
+    } else {
+      confirmPwdFeedback.style.display = 'none';
+      confirmValid = true;
+    }
+    updateSaveButtonState();
+  });
+
+  // proteger submit: si el usuario intenta enviar sin que la confirmación sea correcta, prevenir
+  editarForm.addEventListener('submit', (e) => {
+    // si se está intentando cambiar contraseña (newPwdArea visible OR verifiedCurrentPassword set)
+    const changing = newPwdInput.value || confirmPwdInput.value || verifiedCurrentPassword;
+    if (changing) {
+      if (!(newValid && confirmValid && verifiedCurrentPassword)) {
+        e.preventDefault();
+        // mostrar mensajes apropiados
+        if (!verifiedCurrentPassword) {
+          alert('Debes verificar tu contraseña actual antes de cambiarla.');
+        } else if (!newValid) {
+          alert('La nueva contraseña no cumple los requisitos.');
+        } else if (!confirmValid) {
+          alert('La confirmación no coincide con la nueva contraseña.');
+        }
+      }
+    }
+  });
+
+  // inicializar estado correcto al cargar
+  updateSaveButtonState();
+})();
+</script>
 {% endblock %}
