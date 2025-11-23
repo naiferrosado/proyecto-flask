@@ -14,22 +14,22 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Nombre</label>
-            <input type="text" name="nombre" class="form-control" value="{{ usuario.nombre }}" required>
+            <input type="text" name="nombre" class="form-control" value="{{ usuario.nombre }}" readonly>
           </div>
           <div class="col-md-6">
             <label class="form-label">Apellido</label>
-            <input type="text" name="apellido" class="form-control" value="{{ usuario.apellido }}" required>
+            <input type="text" name="apellido" class="form-control" value="{{ usuario.apellido }}" readonly>
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Correo</label>
-            <input type="email" name="correo" class="form-control" value="{{ usuario.correo }}" required>
+            <input type="email" name="correo" class="form-control" value="{{ usuario.correo }}" readonly>
           </div>
           <div class="col-md-6">
             <label class="form-label">Teléfono</label>
-            <input type="text" name="telefono" class="form-control" value="{{ usuario.telefono }}">
+            <input type="text" name="telefono" class="form-control" value="{{ usuario.telefono }}" readonly>
           </div>
         </div>
 
