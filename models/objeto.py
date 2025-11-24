@@ -21,6 +21,4 @@ class Objeto(db.Model):
 
     reservas = db.relationship("Reserva", backref="objeto", lazy=True)
     opiniones = db.relationship("Opinion", backref="objeto", lazy=True)
-    imagenes = db.relationship(
-        "ImagenObjeto", backref="objeto", lazy=True, cascade="all, delete-orphan"
-    )
+    imagenes = db.relationship("ImagenObjeto", backref="objeto", lazy=True, cascade="all, delete-orphan")

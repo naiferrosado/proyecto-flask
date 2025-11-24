@@ -8,7 +8,5 @@ class Opinion(db.Model):
     comentario = db.Column(db.String(255))
     calificacion = db.Column(db.Integer, nullable=False)
     fecha = db.Column(db.Date, nullable=False)
-    id_usuario = db.Column(
-        db.Integer, db.ForeignKey("usuario.id_usuario"), nullable=False
-    )
+    id_usuario = db.Column(db.Integer, db.ForeignKey("usuario.id_usuario"), nullable=False)
     id_objeto = db.Column(db.Integer, db.ForeignKey("objeto.id_objeto"), nullable=False)
