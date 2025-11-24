@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from extensions import db
 from models.incidencia import Incidencia
@@ -12,47 +12,66 @@ incidencias_bp = Blueprint("incidencias", __name__)
 @incidencias_bp.route("/")
 @login_required
 def listar_incidencias():
-    if current_user.id_rol == 1:  # Administrador
-        incidencias = Incidencia.query.all()
+    # Obtener filtros del query string
+    estado = request.args.get("estado", "todas")
+    orden = request.args.get("orden", "desc")
+
+    query = Incidencia.query
+
+    # Filtrar por estado
+    if estado == "pendiente":
+        query = query.filter(Incidencia.estado == "Abierta")
+    elif estado == "proceso":
+        query = query.filter(Incidencia.estado == "En Proceso")
+    elif estado == "resuelta":
+        query = query.filter(Incidencia.estado == "Resuelta")
+    # "todas" no filtra nada
+
+    # Si NO es admin → solo ve sus incidencias
+    if current_user.id_rol != 1:
+        query = query.filter_by(id_usuario=current_user.id_usuario)
+
+    # Ordenar por fecha
+    if orden == "asc":
+        query = query.order_by(Incidencia.fecha_reporte.asc())
     else:
-        incidencias = Incidencia.query.filter_by(
-            id_usuario=current_user.id_usuario
-        ).all()
+        query = query.order_by(Incidencia.fecha_reporte.desc())
+
+    print(f"Filtro estado: {estado}, orden: {orden}, user: {current_user.id_usuario}")
+    print(f"Total incidencias encontradas: {query.count()}")
+
+    incidencias = query.all()
 
     return render_template("incidencias/listar.html", incidencias=incidencias)
 
 
-@incidencias_bp.route("/nueva/<int:id_reserva>", methods=["GET", "POST"])
+
+@incidencias_bp.route("/crear/<int:id_reserva>", methods=["GET", "POST"])
 @login_required
 def crear_incidencia(id_reserva):
     reserva = Reserva.query.get_or_404(id_reserva)
 
-    # Verificar que la reserva pertenezca al usuario
-    if reserva.id_usuario != current_user.id_usuario:
-        flash("No tienes permisos para reportar incidencias en esta reserva", "error")
-        return redirect(url_for("reservas.listar_reservas"))
+    if request.method == "POST":
+        descripcion = request.form.get("descripcion", "")
+        descripcion = descripcion[:255]  # Limitar a 255 caracteres
 
-    form = IncidenciaForm()
-
-    if form.validate_on_submit():
-        incidencia = Incidencia(
-            descripcion=form.descripcion.data,
-            estado="Abierta",
+        nueva = Incidencia(
+            descripcion=descripcion,
             fecha_reporte=date.today(),
             id_usuario=current_user.id_usuario,
-            id_reserva=id_reserva,
+            id_reserva=id_reserva
         )
 
-        db.session.add(incidencia)
+        db.session.add(nueva)
         db.session.commit()
 
-        flash("Incidencia reportada exitosamente", "success")
-        return redirect(url_for("incidencias.listar_incidencias"))
+        flash("Incidencia reportada correctamente.", "success")
+        return redirect(url_for("reservas.detalle", id=id_reserva))
 
-    return render_template("incidencias/crear.html", form=form, reserva=reserva)
+    return render_template("incidencias/crear.html", reserva=reserva)
 
 
-@incidencias_bp.route("/<int:id>/actualizar", methods=["GET", "POST"])
+@incidencias_bp.route("/<int:id>/actualizar", methods=["POST"])
 @login_required
 def actualizar_incidencia(id):
     incidencia = Incidencia.query.get_or_404(id)
@@ -62,14 +81,12 @@ def actualizar_incidencia(id):
         flash("Solo los administradores pueden actualizar incidencias", "error")
         return redirect(url_for("incidencias.listar_incidencias"))
 
-    form = IncidenciaForm(obj=incidencia)
-
-    if form.validate_on_submit():
-        incidencia.estado = form.estado.data
-        incidencia.descripcion = form.descripcion.data
-
+    nuevo_estado = request.form.get("nuevo_estado")
+    if nuevo_estado in ["Abierta", "En Proceso", "Resuelta"]:
+        incidencia.estado = nuevo_estado
         db.session.commit()
         flash("Incidencia actualizada exitosamente", "success")
-        return redirect(url_for("incidencias.listar_incidencias"))
+    else:
+        flash("Estado no válido", "error")
 
-    return render_template("incidencias/editar.html", form=form, incidencia=incidencia)
+    return redirect(url_for("incidencias.listar_incidencias"))

@@ -33,7 +33,7 @@ endblock %} {% block content %}
 
             <td>
               <a
-                href="{{ url_for('objetos.detalle_objeto', id=pago.reserva.objeto.id_objeto) }}"
+                href="{{ url_for('objetos.detalle_objeto', id_objeto=pago.reserva.objeto.id_objeto) }}"
                 class="text-primary fw-semibold text-decoration-none"
               >
                 {{ pago.reserva.objeto.nombre }}
@@ -57,13 +57,24 @@ endblock %} {% block content %}
             </td>
 
             <td>
+              <!-- Ver Reserva -->
               <a
                 href="{{ url_for('reservas.detalle', id=pago.id_reserva) }}"
-                class="btn btn-sm btn-outline-primary"
+                class="btn btn-sm btn-outline-primary me-2"
               >
                 Ver Reserva
               </a>
+
+              <!-- Crear Incidencia -->
+              <a
+                  href="{{ url_for('incidencias.crear_incidencia', id_reserva=pago.id_reserva) }}"
+                  class="btn btn-sm btn-danger ms-2"
+              >
+                  <i class="fa-solid fa-triangle-exclamation me-1"></i> Incidencia
+              </a>
+
             </td>
+
           </tr>
           {% endfor %}
         </tbody>
