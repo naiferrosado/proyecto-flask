@@ -57,7 +57,7 @@ def dashboard():
             "fecha": datetime.now(),
             "tipo": "info",
         }
-        # Aquí agregarías más actividades reales de la base de datos
+        
     ]
 
     # Usuarios recientes
@@ -84,12 +84,42 @@ def dashboard():
 @login_required
 @admin_required
 def usuarios():
+
     page = request.args.get("page", 1, type=int)
-    usuarios_paginados = Usuario.query.order_by(Usuario.fecha_registro.desc()).paginate(
-        page=page, per_page=10
+
+    search = request.args.get("search", "", type=str)
+    rol = request.args.get("rol", "", type=str)
+    estado = request.args.get("estado", "", type=str)
+
+    query = Usuario.query
+
+    # 🔍 Filtro de búsqueda
+    if search:
+        like = f"%{search}%"
+        query = query.filter(
+            (Usuario.nombre.ilike(like)) |
+            (Usuario.apellido.ilike(like)) |
+            (Usuario.correo.ilike(like))
+        )
+
+    # 🔐 Filtro por rol
+    if rol:
+        query = query.filter(Usuario.id_rol == int(rol))
+
+    # ⚡ Filtro por estado
+    if estado:
+        query = query.filter(Usuario.estado == estado)
+
+    # 📄 Paginación final
+    usuarios_paginados = query.order_by(
+        Usuario.fecha_registro.desc()
+    ).paginate(page=page, per_page=10)
+
+    return render_template(
+        "admin/usuarios.html",
+        usuarios=usuarios_paginados
     )
 
-    return render_template("admin/usuarios.html", usuarios=usuarios_paginados)
 
 
 @admin_bp.route("/usuarios/<int:id>/eliminar", methods=["POST"])

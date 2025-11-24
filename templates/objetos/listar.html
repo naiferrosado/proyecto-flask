@@ -120,12 +120,11 @@
 
         <!-- Footer -->
         <div class="card-footer bg-white border-0 pt-0 pb-3">
-          <a
-            href="{{ url_for('objetos.detalle_objeto', id=objeto.id_objeto) }}"
-            class="btn btn-outline-primary w-100 fw-bold rounded-3"
-          >
+          <a href="{{ url_for('objetos.detalle_objeto', id_objeto=objeto.id_objeto) }}"
+            class="btn btn-outline-primary w-100 fw-bold rounded-3">
             <i class="fa-solid fa-eye me-2"></i> Ver Detalles
           </a>
+
         </div>
       </div>
     </div>
