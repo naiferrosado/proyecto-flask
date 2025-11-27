@@ -17,7 +17,6 @@ from models.imagen_objeto import ImagenObjeto
 from src.forms.form_objetos import ObjetoForm
 from datetime import date
 from models.opinion import Opinion
-
 objetos_bp = Blueprint("objetos", __name__)
 
 # -----------------------------
@@ -25,8 +24,21 @@ objetos_bp = Blueprint("objetos", __name__)
 # -----------------------------
 @objetos_bp.route("/")
 def listar_objetos():
-    objetos = Objeto.query.filter_by(estado="Disponible", publicado=True).all()
-    return render_template("objetos/listar.html", objetos=objetos)
+    categoria_id = request.args.get("categoria")
+    query = Objeto.query.filter_by(estado="Disponible", publicado=True)
+
+    if categoria_id:
+        query = query.filter_by(id_categoria=categoria_id)
+
+    objetos = query.all()
+    categorias = Categoria.query.all()
+    
+    return render_template(
+        "objetos/listar.html", 
+        objetos=objetos, 
+        categorias=categorias,
+        categoria_seleccionada=categoria_id
+    )
 
 
 # -----------------------------
