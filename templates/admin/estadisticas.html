@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block title %}Estadísticas - Rentflow{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary mb-0">
+            <i class="bi bi-graph-up-arrow me-2"></i> Estadísticas
+        </h2>
+
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+            <a href="{{ url_for('admin.reportes') }}" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-text"></i> Ir a Reportes
+            </a>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white fw-bold">
+            <i class="bi bi-funnel"></i> Filtros de Estadísticas
+        </div>
+
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('estadisticas.index') }}" class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Fecha desde</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ fecha_inicio }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Fecha hasta</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ fecha_fin }}">
+                </div>
+
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-repeat me-1"></i> Actualizar Estadísticas
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS PRINCIPALES -->
+    <div class="row mb-4">
+
+        {% set cards = [
+        ('Ingresos Totales', estadisticas.ingresos_totales, 'currency-dollar', 'primary'),
+        ('Reservas Completadas', estadisticas.reservas_completadas, 'calendar-check', 'success'),
+        ('Nuevos Usuarios', estadisticas.nuevos_usuarios, 'person-plus', 'info'),
+        ('Objetos Publicados', estadisticas.objetos_publicados, 'grid', 'warning')
+        ] %}
+
+        {% for titulo, valor, icono, color in cards %}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-{{ color }} border-4 shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <div class="text-uppercase small fw-bold text-{{ color }}">
+                                {{ titulo }}
+                            </div>
+
+                            <div class="h4 fw-bold mt-1">
+                                {% if titulo == 'Ingresos Totales' %}
+                                RD$ {{ "%.2f"|format(valor or 0) }}
+                                {% else %}
+                                {{ valor or 0 }}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <i class="bi bi-{{ icono }} text-secondary display-6 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row">
+
+        <!-- GRÁFICOS -->
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold">
+                    <i class="bi bi-bar-chart-line"></i> Actividad Mensual
+                </div>
+                <div class="card-body">
+                    <canvas id="chartActividad" height="120"></canvas>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="bi bi-pie-chart"></i> Distribución por Categoría
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartCategorias" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="bi bi-geo-alt"></i> Distribución Geográfica
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartGeografico" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- INFO LATERAL -->
+        <div class="col-lg-4">
+
+            <!-- Top Propietarios -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold">
+                    <i class="bi bi-trophy"></i> Top Propietarios (Ingresos)
+                </div>
+                <div class="card-body">
+
+                    {% if top_propietarios %}
+                    {% for p in top_propietarios %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <strong>{{ p.nombre }}</strong><br>
+                            <small class="text-muted">
+                                {{ p.total_reservas }} reservas
+                            </small>
+                        </div>
+
+                        <span class="badge bg-success">
+                            RD$ {{ "%.2f"|format(p.ingresos) }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted text-center">No hay datos disponibles.</p>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- Objetos Más Populares -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold">
+                    <i class="bi bi-star"></i> Objetos Más Populares
+                </div>
+
+                <div class="card-body">
+                    {% if objetos_populares %}
+                    {% for obj in objetos_populares %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <div class="text-truncate" style="max-width: 150px;">
+                            <strong>{{ obj.nombre }}</strong><br>
+                            <small class="text-muted">{{ obj.reservas }} reservas</small>
+                        </div>
+
+                        <span class="badge bg-warning text-dark">
+                            ⭐ {{ obj.calificacion|round(1) }}
+                        </span>
+
+                    </div>
+                    {% endfor %}
+
+                    {% else %}
+                    <p class="text-muted text-center">No hay datos disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tendencias -->
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">
+                    <i class="bi bi-graph-up"></i> Tendencias
+                </div>
+                <div class="card-body small">
+
+                    {% set t = tendencias or {} %}
+
+                    <p class="{{ 'text-success' if t.reservas >= 0 else 'text-danger' }}">
+                        <i class="bi {{ 'bi-arrow-up' if t.reservas >= 0 else 'bi-arrow-down' }}"></i>
+                        {{ t.reservas }}% crecimiento en reservas
+                    </p>
+
+                    <p class="{{ 'text-success' if t.usuarios >= 0 else 'text-danger' }}">
+                        <i class="bi {{ 'bi-arrow-up' if t.usuarios >= 0 else 'bi-arrow-down' }}"></i>
+                        {{ t.usuarios }}% nuevos usuarios
+                    </p>
+
+                    <p class="text-success">
+                        <i class="bi bi-arrow-up"></i>
+                        +{{ t.cat_positiva.porcentaje }}% {{ t.cat_positiva.nombre }}
+                    </p>
+
+                    <p class="text-danger">
+                        <i class="bi bi-arrow-down"></i>
+                        {{ t.cat_negativa.porcentaje }}% {{ t.cat_negativa.nombre }}
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js (si no está en base.html) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Placeholder para gráficos - En un caso real, pasar datos desde Flask
+    const ctxActividad = document.getElementById('chartActividad').getContext('2d');
+    new Chart(ctxActividad, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Reservas',
+                data: [12, 19, 3, 5, 2, 3],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        }
+    });
+
+    const ctxCategorias = document.getElementById('chartCategorias').getContext('2d');
+    new Chart(ctxCategorias, {
+        type: 'doughnut',
+        data: {
+            labels: ['Tecnología', 'Hogar', 'Deportes'],
+            datasets: [{
+                data: [300, 50, 100],
+                backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)']
+            }]
+        }
+    });
+
+    const ctxGeografico = document.getElementById('chartGeografico').getContext('2d');
+    new Chart(ctxGeografico, {
+        type: 'pie',
+        data: {
+            labels: ['Santo Domingo', 'Santiago', 'Punta Cana'],
+            datasets: [{
+                data: [50, 30, 20],
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc']
+            }]
+        }
+    });
+</script>
+{% endblock %}
