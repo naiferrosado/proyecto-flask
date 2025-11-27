@@ -86,6 +86,7 @@ def register_blueprints(app):
     from src.routes.opiniones import opiniones_bp
     from src.routes.incidencias import incidencias_bp
     from src.routes.admin import admin_bp
+    from src.routes.estadisticas import estadisticas_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -96,6 +97,7 @@ def register_blueprints(app):
     app.register_blueprint(opiniones_bp, url_prefix="/opiniones")
     app.register_blueprint(incidencias_bp, url_prefix="/incidencias")
     app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(estadisticas_bp, url_prefix="/admin/estadisticas")
 
 
 def register_error_handlers(app):
