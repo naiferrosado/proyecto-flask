@@ -272,7 +272,7 @@ def actualizar_incidencia(id):
 @login_required
 @admin_required
 def reportes():
-    # Leer parámetros GET (si vienen)
+    # Leer parámetros GET
     start_date_str = request.args.get("start_date")
     end_date_str = request.args.get("end_date")
     tipo_reporte = request.args.get("tipo", "general")
@@ -281,7 +281,7 @@ def reportes():
     fecha_fin = date.today()
     fecha_inicio = fecha_fin - timedelta(days=30)
 
-    # Parsear fechas si vienen en query
+    # Parsear fechas
     try:
         if start_date_str:
             fecha_inicio = datetime.strptime(start_date_str, "%Y-%m-%d").date()
@@ -289,172 +289,73 @@ def reportes():
             fecha_fin = datetime.strptime(end_date_str, "%Y-%m-%d").date()
     except Exception:
         flash("Formato de fecha inválido. Se usarán las fechas por defecto.", "error")
-        fecha_fin = date.today()
-        fecha_inicio = fecha_fin - timedelta(days=30)
 
-    # Asegurar orden correcto (inicio <= fin)
     if fecha_inicio > fecha_fin:
         fecha_inicio, fecha_fin = fecha_fin, fecha_inicio
 
-    # -- Estadísticas básicas (filtradas) --
-    ingresos_totales = (
-        db.session.query(func.coalesce(func.sum(Pago.monto), 0))
-        .join(Reserva, Pago.id_reserva == Reserva.id_reserva)
-        .filter(Pago.fecha_pago.between(fecha_inicio, fecha_fin))
-        .scalar() or 0
-    )
-
-    reservas_completadas = (
-        Reserva.query.filter(
-            Reserva.estado == "Finalizada",
-            Reserva.fecha_reserva.between(fecha_inicio, fecha_fin)
-        ).count()
-    )
-
-    nuevos_usuarios = Usuario.query.filter(
-        Usuario.fecha_registro.between(fecha_inicio, fecha_fin)
-    ).count()
-
-    objetos_publicados = Objeto.query.filter(
-        Objeto.fecha_publicacion.between(fecha_inicio, fecha_fin)
-    ).count()
-
-    estadisticas = {
-        "ingresos_totales": float(ingresos_totales),
-        "reservas_completadas": int(reservas_completadas),
-        "nuevos_usuarios": int(nuevos_usuarios),
-        "objetos_publicados": int(objetos_publicados),
-    }
-
-    # -- Top propietarios: por ingresos en el rango --
-    top_prop_q = (
-        db.session.query(
-            Usuario,
-            func.coalesce(func.sum(Pago.monto), 0).label("total_ingresos"),
-            func.count(Reserva.id_reserva).label("total_reservas")
-        )
-        .join(Objeto, Usuario.id_usuario == Objeto.id_usuario)
-        .join(Reserva, Reserva.id_objeto == Objeto.id_objeto)
-        .join(Pago, Pago.id_reserva == Reserva.id_reserva)
-        .filter(Pago.fecha_pago.between(fecha_inicio, fecha_fin))
-        .group_by(Usuario.id_usuario)
-        .order_by(func.sum(Pago.monto).desc())
-        .limit(5)
-        .all()
-    )
-
-    top_propietarios = []
-    for usuario, ingresos, reservas_totales in top_prop_q:
-        top_propietarios.append({
-            "nombre": f"{usuario.nombre} {usuario.apellido}",
-            "objetos": len(usuario.objetos),
-            "ingresos": float(ingresos or 0),
-            "reservas": int(reservas_totales or 0),
-        })
-
-    # -- Objetos populares: reservas (rango) y promedio de calificación --
-    # Subconsulta reservas por objeto en rango
-    res_sub = (
-        db.session.query(
-            Reserva.id_objeto.label("id_objeto"),
-            func.count(Reserva.id_reserva).label("cnt_reservas")
-        )
-        .filter(Reserva.fecha_reserva.between(fecha_inicio, fecha_fin))
-        .group_by(Reserva.id_objeto)
-        .subquery()
-    )
-
-    # Subconsulta promedio calificaciones (puede no tener rango)
-    opin_sub = (
-        db.session.query(
-            Opinion.id_objeto.label("id_objeto"),
-            func.avg(Opinion.calificacion).label("avg_calif")
-        )
-        .group_by(Opinion.id_objeto)
-        .subquery()
-    )
-
-    objs_pop_q = (
-        db.session.query(
-            Objeto,
-            func.coalesce(res_sub.c.cnt_reservas, 0).label("total_reservas"),
-            func.coalesce(opin_sub.c.avg_calif, 0).label("promedio_calificacion")
-        )
-        .outerjoin(res_sub, Objeto.id_objeto == res_sub.c.id_objeto)
-        .outerjoin(opin_sub, Objeto.id_objeto == opin_sub.c.id_objeto)
-        .order_by(func.coalesce(res_sub.c.cnt_reservas, 0).desc(), func.coalesce(opin_sub.c.avg_calif, 0).desc())
-        .limit(10)
-        .all()
-    )
-
-    objetos_populares = []
-    for objeto, total_reservas, promedio_calificacion in objs_pop_q:
-        objetos_populares.append({
-            "nombre": objeto.nombre,
-            "reservas": int(total_reservas or 0),
-            "calificacion": float(promedio_calificacion or 0),
-        })
-
-    # -- Tendencias (básico) --
-    # porcentaje cambio reservas (vs periodo anterior)
-    rango_days = (fecha_fin - fecha_inicio).days or 1
-    previo_inicio = fecha_inicio - timedelta(days=rango_days + 1)
-    previo_fin = fecha_inicio - timedelta(days=1)
-
-    reservas_actual = Reserva.query.filter(Reserva.fecha_reserva.between(fecha_inicio, fecha_fin)).count()
-    reservas_prev = Reserva.query.filter(Reserva.fecha_reserva.between(previo_inicio, previo_fin)).count()
-    reservas_pct = round(((reservas_actual - reservas_prev) / reservas_prev * 100) if reservas_prev > 0 else 0, 2)
-
-    usuarios_actual = Usuario.query.filter(Usuario.fecha_registro.between(fecha_inicio, fecha_fin)).count()
-    usuarios_prev = Usuario.query.filter(Usuario.fecha_registro.between(previo_inicio, previo_fin)).count()
-    usuarios_pct = round(((usuarios_actual - usuarios_prev) / usuarios_prev * 100) if usuarios_prev > 0 else 0, 2)
-
-    # categorías: comparar cantidad de objetos publicados en el periodo vs anterior
-    cats = (
-        db.session.query(
-            Categoria.id_categoria,
-            Categoria.nombre,
-            func.count(Objeto.id_objeto).label("cnt")
-        )
-        .outerjoin(Objeto, Categoria.id_categoria == Objeto.id_categoria)
-        .filter(Objeto.fecha_publicacion.between(fecha_inicio, fecha_fin))
-        .group_by(Categoria.id_categoria, Categoria.nombre)
-        .all()
-    )
-
-    # Para simplicidad si no hay datos mostramos placeholders
-    cat_positiva = {"nombre": "N/A", "porcentaje": 0}
-    cat_negativa = {"nombre": "N/A", "porcentaje": 0}
-    if cats:
-        # Convert to list sorted by cnt
-        cats_sorted = sorted(cats, key=lambda x: x.cnt, reverse=True)
-        cat_positiva["nombre"] = cats_sorted[0].nombre
-        cat_positiva["porcentaje"] = int(cats_sorted[0].cnt)
-        cat_negativa["nombre"] = cats_sorted[-1].nombre
-        cat_negativa["porcentaje"] = int(cats_sorted[-1].cnt)
-
-    tendencias = {
-        # kept multiple key names to be flexible con distintos templates
-        "reservas": reservas_pct,
-        "usuarios": usuarios_pct,
-        "crecimiento_reservas": reservas_pct,
-        "crecimiento_usuarios": usuarios_pct,
-        "cat_positiva": cat_positiva,
-        "cat_negativa": cat_negativa,
-        "categoria_mayor_alza": cat_positiva,
-        "categoria_mayor_baja": cat_negativa,
-    }
+    # Obtener datos para vista previa
+    datos = obtener_datos_reporte(tipo_reporte, fecha_inicio, fecha_fin)
 
     return render_template(
         "admin/reportes.html",
-        estadisticas=estadisticas,
-        top_propietarios=top_propietarios,
-        objetos_populares=objetos_populares,
-        tendencias=tendencias,
         fecha_inicio=fecha_inicio,
         fecha_fin=fecha_fin,
         tipo_reporte=tipo_reporte,
+        datos=datos
     )
+
+
+def obtener_datos_reporte(tipo, inicio, fin):
+    """Helper para obtener datos según el tipo de reporte"""
+    data = []
+    
+    if tipo == "usuarios":
+        usuarios = Usuario.query.filter(Usuario.fecha_registro.between(inicio, fin)).all()
+        for u in usuarios:
+            data.append({
+                "ID": u.id_usuario,
+                "Nombre": f"{u.nombre} {u.apellido}",
+                "Correo": u.correo,
+                "Rol": "Administrador" if u.id_rol == 1 else "Usuario",
+                "Fecha Registro": u.fecha_registro.strftime("%Y-%m-%d")
+            })
+            
+    elif tipo == "transacciones":
+        pagos = db.session.query(Pago, Reserva, Usuario).select_from(Pago).join(Reserva).join(Usuario).filter(Pago.fecha_pago.between(inicio, fin)).all()
+        for p, r, u in pagos:
+            data.append({
+                "ID Pago": p.id_pago,
+                "Fecha": p.fecha_pago.strftime("%Y-%m-%d"),
+                "Usuario": f"{u.nombre} {u.apellido}",
+                "Monto": f"RD$ {p.monto:,.2f}",
+                "Método": p.metodo
+            })
+
+    elif tipo == "objetos":
+        objetos = Objeto.query.filter(Objeto.fecha_publicacion.between(inicio, fin)).all()
+        for o in objetos:
+            data.append({
+                "ID": o.id_objeto,
+                "Nombre": o.nombre,
+                "Categoría": o.categoria.nombre if o.categoria else "N/A",
+                "Precio": f"RD$ {o.precio:,.2f}",
+                "Estado": o.estado
+            })
+            
+    elif tipo == "general":
+        # Resumen general
+        ingresos = db.session.query(func.sum(Pago.monto)).join(Reserva).filter(Pago.fecha_pago.between(inicio, fin)).scalar() or 0
+        nuevos_usuarios = Usuario.query.filter(Usuario.fecha_registro.between(inicio, fin)).count()
+        reservas = Reserva.query.filter(Reserva.fecha_reserva.between(inicio, fin)).count()
+        
+        data = [
+            {"Métrica": "Ingresos Totales", "Valor": f"RD$ {ingresos:,.2f}"},
+            {"Métrica": "Nuevos Usuarios", "Valor": nuevos_usuarios},
+            {"Métrica": "Reservas Realizadas", "Valor": reservas},
+            {"Métrica": "Periodo", "Valor": f"{inicio} al {fin}"}
+        ]
+
+    return data
 
 
 # ------------------- EXPORTACIÓN -------------------
@@ -462,12 +363,91 @@ def reportes():
 @login_required
 @admin_required
 def exportar_reporte(formato):
-    if formato not in ["pdf", "excel", "csv"]:
-        flash("Formato de exportación no válido.", "error")
+    import pandas as pd
+    import io
+    from flask import make_response
+
+    # Obtener parámetros
+    start_date_str = request.args.get("start_date")
+    end_date_str = request.args.get("end_date")
+    tipo = request.args.get("tipo", "general")
+
+    # Procesar fechas (igual que en vista)
+    fecha_fin = date.today()
+    fecha_inicio = fecha_fin - timedelta(days=30)
+    try:
+        if start_date_str:
+            fecha_inicio = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        if end_date_str:
+            fecha_fin = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except:
+        pass
+
+    # Obtener datos
+    datos = obtener_datos_reporte(tipo, fecha_inicio, fecha_fin)
+    
+    if not datos:
+        flash("No hay datos para exportar en este rango.", "warning")
         return redirect(url_for("admin.reportes"))
 
-    # Aquí pondrías la lógica de generación (weasyprint / pandas / csv)
-    return f"Generando {formato.upper()}..."
+    # Crear DataFrame
+    df = pd.DataFrame(datos)
+
+    # Exportar según formato
+    if formato == "csv":
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        response = make_response(output.getvalue())
+        response.headers["Content-Disposition"] = f"attachment; filename=reporte_{tipo}_{fecha_inicio}_{fecha_fin}.csv"
+        response.headers["Content-type"] = "text/csv"
+        return response
+
+    elif formato == "excel":
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name="Reporte")
+        output.seek(0)
+        response = make_response(output.read())
+        response.headers["Content-Disposition"] = f"attachment; filename=reporte_{tipo}_{fecha_inicio}_{fecha_fin}.xlsx"
+        response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        return response
+
+    elif formato == "pdf":
+        try:
+            from xhtml2pdf import pisa
+            
+            html_content = render_template(
+                "admin/reporte_pdf.html", 
+                datos=datos, 
+                tipo=tipo, 
+                inicio=fecha_inicio, 
+                fin=fecha_fin,
+                now=datetime.now()
+            )
+            
+            output = io.BytesIO()
+            pisa_status = pisa.CreatePDF(
+                html_content, dest=output
+            )
+            
+            if pisa_status.err:
+                flash("Error generando PDF", "error")
+                return redirect(url_for("admin.reportes"))
+                
+            output.seek(0)
+            response = make_response(output.read())
+            response.headers["Content-Disposition"] = f"attachment; filename=reporte_{tipo}_{fecha_inicio}_{fecha_fin}.pdf"
+            response.headers["Content-type"] = "application/pdf"
+            return response
+            
+        except ImportError:
+            flash("Error: Librería de PDF no instalada correctamente.", "error")
+            return redirect(url_for("admin.reportes"))
+        except Exception as e:
+            flash(f"Error generando PDF: {str(e)}", "error")
+            return redirect(url_for("admin.reportes"))
+
+    return redirect(url_for("admin.reportes"))
 
 
 # ------------------- CONFIGURACIÓN -------------------
