@@ -19,9 +19,7 @@ endblock %} {% block content %}
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div
-                class="text-xs font-weight-bold text-primary text-uppercase mb-1"
-              >
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                 Usuarios Totales
               </div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">
@@ -41,9 +39,7 @@ endblock %} {% block content %}
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div
-                class="text-xs font-weight-bold text-success text-uppercase mb-1"
-              >
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                 Objetos Activos
               </div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">
@@ -63,9 +59,7 @@ endblock %} {% block content %}
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div
-                class="text-xs font-weight-bold text-warning text-uppercase mb-1"
-              >
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                 Reservas Activas
               </div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">
@@ -85,9 +79,7 @@ endblock %} {% block content %}
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div
-                class="text-xs font-weight-bold text-danger text-uppercase mb-1"
-              >
+              <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
                 Incidencias Pendientes
               </div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">
@@ -113,66 +105,44 @@ endblock %} {% block content %}
           </h6>
         </div>
         <div class="list-group list-group-flush">
-          <a
-            href="{{ url_for('admin.usuarios') }}"
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-          >
+          <a href="{{ url_for('admin.usuarios') }}"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             <div><i class="bi bi-people me-2"></i> Gestión de Usuarios</div>
-            <span class="badge bg-primary rounded-pill"
-              >{{ stats.total_usuarios }}</span
-            >
+            <span class="badge bg-primary rounded-pill">{{ stats.total_usuarios }}</span>
           </a>
 
-          <a
-            href="{{ url_for('objetos.listar_objetos') }}"
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-          >
+          <a href="{{ url_for('objetos.listar_objetos') }}"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             <div><i class="bi bi-grid me-2"></i> Ver Todos los Objetos</div>
-            <span class="badge bg-secondary rounded-pill"
-              >{{ stats.total_objetos }}</span
-            >
+            <span class="badge bg-secondary rounded-pill">{{ stats.total_objetos }}</span>
           </a>
 
-          <a
-            href="{{ url_for('admin.categorias') }}"
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-          >
+          <a href="{{ url_for('admin.categorias') }}"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             <div><i class="bi bi-tags me-2"></i> Gestión de Categorías</div>
-            <span class="badge bg-secondary rounded-pill"
-              >{{ stats.total_categorias }}</span
-            >
+            <span class="badge bg-secondary rounded-pill">{{ stats.total_categorias }}</span>
           </a>
 
-          <a
-            href="{{ url_for('admin.incidencias') }}"
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-          >
+          <a href="{{ url_for('admin.incidencias') }}"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             <div>
               <i class="bi bi-exclamation-triangle me-2"></i> Gestión de
               Incidencias
             </div>
             {% if stats.incidencias_pendientes > 0 %}
-            <span class="badge bg-danger rounded-pill"
-              >{{ stats.incidencias_pendientes }}</span
-            >
+            <span class="badge bg-danger rounded-pill">{{ stats.incidencias_pendientes }}</span>
             {% else %}
             <span class="badge bg-success rounded-pill">0</span>
             {% endif %}
           </a>
 
-          <a
-            href="{{ url_for('admin.reportes') }}"
-            class="list-group-item list-group-item-action"
-          >
-            <i class="bi bi-graph-up me-2"></i> Reportes y Estadísticas
+          <a href="{{ url_for('admin.reportes') }}" class="list-group-item list-group-item-action">
+            <i class="bi bi-graph-up me-2"></i> Reportes
+          </a>
+          <a href="{{ url_for('estadisticas.index') }}" class="list-group-item list-group-item-action">
+            <i class="bi bi-graph-up me-2"></i> Estadísticas
           </a>
 
-          <a
-            href="{{ url_for('admin.configuracion') }}"
-            class="list-group-item list-group-item-action"
-          >
-            <i class="bi bi-gear me-2"></i> Configuración del Sistema
-          </a>
         </div>
       </div>
 
@@ -184,33 +154,21 @@ endblock %} {% block content %}
         <div class="card-body">
           <div class="d-grid gap-2">
             {% if stats.incidencias_pendientes > 0 %}
-            <a
-              href="{{ url_for('admin.incidencias') }}?estado=Abierta"
-              class="btn btn-danger btn-sm"
-            >
+            <a href="{{ url_for('admin.incidencias') }}?estado=Abierta" class="btn btn-danger btn-sm">
               <i class="bi bi-exclamation-triangle"></i> Resolver {{
               stats.incidencias_pendientes }} Incidencias
             </a>
             {% endif %}
 
-            <a
-              href="{{ url_for('admin.categorias') }}"
-              class="btn btn-primary btn-sm"
-            >
+            <a href="{{ url_for('admin.categorias') }}" class="btn btn-primary btn-sm">
               <i class="bi bi-plus-circle"></i> Gestionar Categorías
             </a>
 
-            <a
-              href="{{ url_for('admin.usuarios') }}"
-              class="btn btn-info btn-sm"
-            >
+            <a href="{{ url_for('admin.usuarios') }}" class="btn btn-info btn-sm">
               <i class="bi bi-people"></i> Ver Todos los Usuarios
             </a>
 
-            <a
-              href="{{ url_for('admin.reportes') }}"
-              class="btn btn-warning btn-sm"
-            >
+            <a href="{{ url_for('admin.reportes') }}" class="btn btn-warning btn-sm">
               <i class="bi bi-download"></i> Generar Reporte
             </a>
           </div>
@@ -257,15 +215,10 @@ endblock %} {% block content %}
               <strong>{{ stats.incidencias_pendientes }} incidencias</strong>
               requieren atención inmediata
               <br />
-              <small
-                >Revise y resuelva las incidencias reportadas por los
-                usuarios.</small
-              >
+              <small>Revise y resuelva las incidencias reportadas por los
+                usuarios.</small>
             </div>
-            <a
-              href="{{ url_for('admin.incidencias') }}?estado=Abierta"
-              class="btn btn-danger btn-sm"
-            >
+            <a href="{{ url_for('admin.incidencias') }}?estado=Abierta" class="btn btn-danger btn-sm">
               <i class="bi bi-arrow-right"></i> Resolver Ahora
             </a>
           </div>
@@ -277,18 +230,13 @@ endblock %} {% block content %}
         <!-- Actividad Reciente -->
         <div class="col-md-8">
           <div class="card mb-4">
-            <div
-              class="card-header d-flex justify-content-between align-items-center"
-            >
+            <div class="card-header d-flex justify-content-between align-items-center">
               <h6 class="mb-0">
                 <i class="bi bi-clock-history"></i> Actividad Reciente del
                 Sistema
               </h6>
-              <a
-                href="{{ url_for('admin.reportes') }}"
-                class="btn btn-sm btn-outline-primary"
-                >Ver Reportes Completos</a
-              >
+              <a href="{{ url_for('admin.reportes') }}" class="btn btn-sm btn-outline-primary">Ver Reportes
+                Completos</a>
             </div>
             <div class="card-body">
               {% if actividad_reciente %}
@@ -297,19 +245,13 @@ endblock %} {% block content %}
                 <div class="list-group-item">
                   <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">{{ actividad.titulo }}</h6>
-                    <small class="text-muted"
-                      >{{ actividad.fecha.strftime('%H:%M') }}</small
-                    >
+                    <small class="text-muted">{{ actividad.fecha.strftime('%H:%M') }}</small>
                   </div>
                   <p class="mb-1 small text-muted">
                     {{ actividad.descripcion }}
                   </p>
-                  <small class="text-muted"
-                    >{{ actividad.fecha.strftime('%d/%m/%Y') }}</small
-                  >
-                  <span class="badge bg-{{ actividad.tipo }} float-end"
-                    >{{ actividad.tipo|title }}</span
-                  >
+                  <small class="text-muted">{{ actividad.fecha.strftime('%d/%m/%Y') }}</small>
+                  <span class="badge bg-{{ actividad.tipo }} float-end">{{ actividad.tipo|title }}</span>
                 </div>
                 {% endfor %}
               </div>
@@ -317,9 +259,7 @@ endblock %} {% block content %}
               <div class="text-center py-4">
                 <i class="bi bi-activity display-4 text-muted"></i>
                 <p class="text-muted mt-3">No hay actividad reciente</p>
-                <small class="text-muted"
-                  >Las actividades del sistema aparecerán aquí</small
-                >
+                <small class="text-muted">Las actividades del sistema aparecerán aquí</small>
               </div>
               {% endif %}
             </div>
@@ -338,18 +278,14 @@ endblock %} {% block content %}
               <div class="mb-3 p-3 bg-light rounded">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="small text-muted">Nuevos Usuarios</span>
-                  <strong class="text-primary"
-                    >{{ stats.nuevos_usuarios_hoy }}</strong
-                  >
+                  <strong class="text-primary">{{ stats.nuevos_usuarios_hoy }}</strong>
                 </div>
               </div>
 
               <div class="mb-3 p-3 bg-light rounded">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="small text-muted">Nuevos Objetos</span>
-                  <strong class="text-success"
-                    >{{ stats.nuevos_objetos_hoy }}</strong
-                  >
+                  <strong class="text-success">{{ stats.nuevos_objetos_hoy }}</strong>
                 </div>
               </div>
 
@@ -363,9 +299,7 @@ endblock %} {% block content %}
               <div class="p-3 bg-light rounded">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="small text-muted">Ingresos del Día</span>
-                  <strong class="text-success"
-                    >RD$ {{ "%.2f"|format(stats.ingresos_hoy) }}</strong
-                  >
+                  <strong class="text-success">RD$ {{ "%.2f"|format(stats.ingresos_hoy) }}</strong>
                 </div>
               </div>
             </div>
@@ -378,28 +312,16 @@ endblock %} {% block content %}
             </div>
             <div class="card-body">
               <div class="d-grid gap-2">
-                <a
-                  href="{{ url_for('objetos.crear_objeto') }}"
-                  class="btn btn-outline-primary btn-sm"
-                >
+                <a href="{{ url_for('objetos.crear_objeto') }}" class="btn btn-outline-primary btn-sm">
                   <i class="bi bi-plus-circle"></i> Publicar Nuevo Objeto
                 </a>
-                <a
-                  href="{{ url_for('reservas.listar_reservas') }}"
-                  class="btn btn-outline-success btn-sm"
-                >
+                <a href="{{ url_for('reservas.listar_reservas') }}" class="btn btn-outline-success btn-sm">
                   <i class="bi bi-calendar-check"></i> Ver Mis Reservas
                 </a>
-                <a
-                  href="{{ url_for('objetos.listar_objetos') }}"
-                  class="btn btn-outline-info btn-sm"
-                >
+                <a href="{{ url_for('objetos.listar_objetos') }}" class="btn btn-outline-info btn-sm">
                   <i class="bi bi-search"></i> Explorar Objetos
                 </a>
-                <a
-                  href="{{ url_for('admin.configuracion') }}"
-                  class="btn btn-outline-warning btn-sm"
-                >
+                <a href="{{ url_for('admin.configuracion') }}" class="btn btn-outline-warning btn-sm">
                   <i class="bi bi-gear"></i> Configuración
                 </a>
               </div>
@@ -413,26 +335,18 @@ endblock %} {% block content %}
         <!-- Usuarios Recientes -->
         <div class="col-md-6">
           <div class="card h-100">
-            <div
-              class="card-header d-flex justify-content-between align-items-center"
-            >
+            <div class="card-header d-flex justify-content-between align-items-center">
               <h6 class="mb-0">
                 <i class="bi bi-person-plus"></i> Usuarios Registrados
                 Recientemente
               </h6>
-              <a
-                href="{{ url_for('admin.usuarios') }}"
-                class="btn btn-sm btn-outline-primary"
-                >Gestionar</a
-              >
+              <a href="{{ url_for('admin.usuarios') }}" class="btn btn-sm btn-outline-primary">Gestionar</a>
             </div>
             <div class="card-body">
               {% if usuarios_recientes %}
               <div class="list-group list-group-flush">
                 {% for usuario in usuarios_recientes %}
-                <div
-                  class="list-group-item d-flex justify-content-between align-items-center"
-                >
+                <div class="list-group-item d-flex justify-content-between align-items-center">
                   <div>
                     <div class="fw-bold">
                       {{ usuario.nombre }} {{ usuario.apellido }}
@@ -440,12 +354,8 @@ endblock %} {% block content %}
                     <small class="text-muted">{{ usuario.correo }}</small>
                   </div>
                   <div class="text-end">
-                    <small class="text-muted d-block"
-                      >{{ usuario.fecha_registro.strftime('%d/%m/%Y') }}</small
-                    >
-                    <span
-                      class="badge bg-{{ 'danger' if usuario.id_rol == 1 else 'primary' }}"
-                    >
+                    <small class="text-muted d-block">{{ usuario.fecha_registro.strftime('%d/%m/%Y') }}</small>
+                    <span class="badge bg-{{ 'danger' if usuario.id_rol == 1 else 'primary' }}">
                       {% if usuario.id_rol == 1 %}Admin{% else %}Usuario{% endif
                       %}
                     </span>
@@ -466,25 +376,17 @@ endblock %} {% block content %}
         <!-- Objetos Recientes -->
         <div class="col-md-6">
           <div class="card h-100">
-            <div
-              class="card-header d-flex justify-content-between align-items-center"
-            >
+            <div class="card-header d-flex justify-content-between align-items-center">
               <h6 class="mb-0">
                 <i class="bi bi-grid"></i> Objetos Publicados Recientemente
               </h6>
-              <a
-                href="{{ url_for('objetos.listar_objetos') }}"
-                class="btn btn-sm btn-outline-primary"
-                >Explorar</a
-              >
+              <a href="{{ url_for('objetos.listar_objetos') }}" class="btn btn-sm btn-outline-primary">Explorar</a>
             </div>
             <div class="card-body">
               {% if objetos_recientes %}
               <div class="list-group list-group-flush">
                 {% for objeto in objetos_recientes %}
-                <div
-                  class="list-group-item d-flex justify-content-between align-items-center"
-                >
+                <div class="list-group-item d-flex justify-content-between align-items-center">
                   <div class="flex-grow-1">
                     <div class="fw-bold text-truncate">{{ objeto.nombre }}</div>
                     <small class="text-muted">
@@ -493,12 +395,8 @@ endblock %} {% block content %}
                     </small>
                   </div>
                   <div class="text-end">
-                    <small class="text-muted d-block"
-                      >{{ objeto.fecha_publicacion.strftime('%d/%m') }}</small
-                    >
-                    <span
-                      class="badge bg-{{ 'success' if objeto.estado == 'Disponible' else 'warning' }}"
-                    >
+                    <small class="text-muted d-block">{{ objeto.fecha_publicacion.strftime('%d/%m') }}</small>
+                    <span class="badge bg-{{ 'success' if objeto.estado == 'Disponible' else 'warning' }}">
                       {{ objeto.estado }}
                     </span>
                   </div>
