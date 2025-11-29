@@ -8,10 +8,7 @@
         <div class="card-body p-4 p-lg-5">
           <!-- Encabezado de la Tarjeta -->
           <div class="text-center mb-5">
-            <i
-              class="fa-solid fa-user-plus fa-3x mb-3"
-              style="color: var(--bs-primary)"
-            ></i>
+            <i class="fa-solid fa-user-plus fa-3x mb-3" style="color: var(--bs-primary)"></i>
             <h3 class="fw-bold mb-0">Crear una Cuenta</h3>
             <p class="text-muted">
               Únete a la comunidad de Rentflow y empieza a compartir.
@@ -112,6 +109,17 @@
               </div>
             </div>
 
+            <!-- Campo: Rol -->
+            <div class="mb-4">
+              {{ form.rol.label(class="form-label fw-bold") }}
+              {{ form.rol(class="form-select form-select-lg rounded-3") }}
+              {% if form.rol.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.rol.errors %} {{ error }} {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
             <!-- Botón de Envío -->
             <div class="d-grid my-4">
               {{ form.submit(class="btn btn-main-action btn-lg text-white
@@ -123,11 +131,8 @@
           <div class="text-center">
             <p class="mb-0 text-muted">
               ¿Ya tienes cuenta?
-              <a
-                href="{{ url_for('auth.login') }}"
-                class="text-decoration-none fw-bold"
-                style="color: var(--bs-primary)"
-              >
+              <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold"
+                style="color: var(--bs-primary)">
                 Inicia sesión aquí
               </a>
             </p>

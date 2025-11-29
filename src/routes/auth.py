@@ -44,7 +44,7 @@ def register():
             telefono=form.telefono.data,
             direccion=form.direccion.data,
             fecha_registro=date.today(),
-            id_rol=2,  # Rol de Usuario por defecto
+            id_rol=int(form.rol.data),  # Rol seleccionado por el usuario
         )
         user.set_password(form.contrasena.data)
 
