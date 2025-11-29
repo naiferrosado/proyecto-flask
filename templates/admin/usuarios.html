@@ -17,14 +17,15 @@
 
   <!-- MENSAJES FLASH -->
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show"
+    role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
   {% endwith %}
 
   <!-- ESTADÍSTICAS -->
@@ -70,15 +71,15 @@
     <div class="card-body">
       <div class="row g-3">
         <div class="col-md-4">
-          <input type="text" id="searchInput" class="form-control"
-                 placeholder="Buscar por nombre, email...">
+          <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre, email...">
         </div>
 
         <div class="col-md-3">
           <select id="roleFilter" class="form-select">
             <option value="">Todos los roles</option>
             <option value="1">Administradores</option>
-            <option value="2">Usuarios</option>
+            <option value="2">Clientes</option>
+            <option value="3">Propietarios</option>
           </select>
         </div>
 
@@ -123,8 +124,9 @@
           <tr>
             <td>
               <div class="d-flex align-items-center">
-                <img src="https://ui-avatars.com/api/?name={{ usuario.nombre }}+{{ usuario.apellido }}&background=0D6EFD&color=fff&rounded=true&size=45"
-                     class="rounded-circle me-3">
+                <img
+                  src="https://ui-avatars.com/api/?name={{ usuario.nombre }}+{{ usuario.apellido }}&background=0D6EFD&color=fff&rounded=true&size=45"
+                  class="rounded-circle me-3">
                 <div>
                   <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong><br>
                   <small class="text-muted">ID: {{ usuario.id_usuario }}</small>
@@ -138,8 +140,17 @@
             </td>
 
             <td>
-              <span class="badge bg-{{ 'danger' if usuario.id_rol == 1 else 'primary' }}">
-                {{ "Administrador" if usuario.id_rol == 1 else "Usuario" }}
+              <span
+                class="badge bg-{{ 'danger' if usuario.id_rol == 1 else 'primary' if usuario.id_rol == 2 else 'info' }}">
+                {% if usuario.id_rol == 1 %}
+                Administrador
+                {% elif usuario.id_rol == 2 %}
+                Cliente
+                {% elif usuario.id_rol == 3 %}
+                Propietario
+                {% else %}
+                Desconocido
+                {% endif %}
               </span>
             </td>
 
@@ -155,18 +166,17 @@
 
             <td class="text-center">
               <a href="{{ url_for('admin.ver_usuario', id=usuario.id_usuario) }}"
-                 class="btn btn-outline-primary btn-sm me-2">
+                class="btn btn-outline-primary btn-sm me-2">
                 <i class="fa-solid fa-eye"></i> Ver
               </a>
 
               <a href="{{ url_for('admin.editar_usuario', id=usuario.id_usuario) }}"
-                 class="btn btn-warning btn-sm me-2">
+                class="btn btn-warning btn-sm me-2">
                 <i class="fa-solid fa-pen-to-square"></i> Editar
               </a>
 
               {% if usuario.id_rol != 1 %}
-              <button class="btn btn-danger btn-sm"
-                      onclick="eliminarUsuario({{ usuario.id_usuario }})">
+              <button class="btn btn-danger btn-sm" onclick="eliminarUsuario({{ usuario.id_usuario }})">
                 <i class="fa-solid fa-trash-can"></i> Eliminar
               </button>
               {% endif %}
@@ -183,21 +193,23 @@
   <nav class="mt-4">
     <ul class="pagination justify-content-center">
       {% if usuarios.has_prev %}
-      <li class="page-item"><a class="page-link" href="{{ url_for('admin.usuarios', page=usuarios.prev_num) }}">Anterior</a></li>
+      <li class="page-item"><a class="page-link"
+          href="{{ url_for('admin.usuarios', page=usuarios.prev_num) }}">Anterior</a></li>
       {% endif %}
 
       {% for page_num in usuarios.iter_pages() %}
-        {% if page_num %}
-        <li class="page-item {% if page_num == usuarios.page %}active{% endif %}">
-          <a class="page-link" href="{{ url_for('admin.usuarios', page=page_num) }}">{{ page_num }}</a>
-        </li>
-        {% else %}
-        <li class="page-item disabled"><span class="page-link">...</span></li>
-        {% endif %}
+      {% if page_num %}
+      <li class="page-item {% if page_num == usuarios.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('admin.usuarios', page=page_num) }}">{{ page_num }}</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      {% endif %}
       {% endfor %}
 
       {% if usuarios.has_next %}
-      <li class="page-item"><a class="page-link" href="{{ url_for('admin.usuarios', page=usuarios.next_num) }}">Siguiente</a></li>
+      <li class="page-item"><a class="page-link"
+          href="{{ url_for('admin.usuarios', page=usuarios.next_num) }}">Siguiente</a></li>
       {% endif %}
     </ul>
   </nav>

@@ -14,30 +14,31 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Nombre</label>
-            <input type="text" name="nombre" class="form-control" value="{{ usuario.nombre }}" readonly>
+            <input type="text" name="nombre" class="form-control" value="{{ usuario.nombre }}" required>
           </div>
           <div class="col-md-6">
             <label class="form-label">Apellido</label>
-            <input type="text" name="apellido" class="form-control" value="{{ usuario.apellido }}" readonly>
+            <input type="text" name="apellido" class="form-control" value="{{ usuario.apellido }}" required>
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Correo</label>
-            <input type="email" name="correo" class="form-control" value="{{ usuario.correo }}" readonly>
+            <input type="email" name="correo" class="form-control" value="{{ usuario.correo }}" required>
           </div>
           <div class="col-md-6">
             <label class="form-label">Teléfono</label>
-            <input type="text" name="telefono" class="form-control" value="{{ usuario.telefono }}" readonly>
+            <input type="text" name="telefono" class="form-control" value="{{ usuario.telefono }}" required>
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Rol</label>
           <select name="id_rol" class="form-select">
-            <option value="1" {% if usuario.id_rol == 1 %}selected{% endif %}>Administrador</option>
-            <option value="2" {% if usuario.id_rol == 2 %}selected{% endif %}>Usuario</option>
+            <option value="1" {% if usuario.id_rol==1 %}selected{% endif %}>Administrador</option>
+            <option value="2" {% if usuario.id_rol==2 %}selected{% endif %}>Cliente</option>
+            <option value="3" {% if usuario.id_rol==3 %}selected{% endif %}>Propietario</option>
           </select>
         </div>
 

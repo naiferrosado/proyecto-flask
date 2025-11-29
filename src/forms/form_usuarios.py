@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, DateField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 
 
@@ -138,5 +138,9 @@ class RegistrationForm(FlaskForm):
             ),
         ],
     )
-    # ELIMINAR el campo id_rol - se asignará automáticamente
+    rol = SelectField(
+        "Tipo de Cuenta",
+        choices=[("2", "Cliente"), ("3", "Propietario")],
+        validators=[DataRequired(message="Debes seleccionar un tipo de cuenta.")],
+    )
     submit = SubmitField("Registrarse")
