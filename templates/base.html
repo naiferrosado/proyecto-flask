@@ -92,6 +92,7 @@
                         <i class="fa-solid fa-magnifying-glass me-1"></i> Explorar
                     </a>
                     {% if current_user.is_authenticated %}
+                    {% if current_user.id_rol not in [1, 3] %}
                     <a class="nav-link" href="{{ url_for('reservas.listar_reservas') }}">
                         <i class="fa-solid fa-calendar-check me-1"></i> Mis Reservas
                     </a>
@@ -99,10 +100,13 @@
                         <i class="fa-solid fa-credit-card me-1"></i> Mis Pagos
                     </a>
                     {% endif %}
+                    {% endif %}
                 </div>
 
                 <div class="navbar-nav ms-auto align-items-lg-center">
                     {% if current_user.is_authenticated %}
+
+                    {% if current_user.id_rol == 3 %}
                     <a class="btn btn-main-action text-white me-3 mb-2 mb-lg-0"
                         href="{{ url_for('objetos.crear_objeto') }}">
                         <i class="fa-solid fa-circle-plus me-1"></i> Nuevo Objeto
@@ -111,6 +115,7 @@
                         href="{{ url_for('objetos.ver_borradores') }}">
                         <i class="fa-solid fa-file-lines me-1"></i> Mis Borradores
                     </a>
+                    {% endif %}
 
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
@@ -124,7 +129,13 @@
                             <img src="{{ avatar }}" alt="Avatar" class="rounded-circle me-2 shadow-sm" width="34"
                                 height="34" />
 
-                            <span class="d-none d-lg-inline">{{ current_user.nombre }}</span>
+                            <span class="d-none d-lg-inline">
+                                {{ current_user.nombre }}
+                                <span
+                                    class="badge rounded-pill bg-{{ 'danger' if current_user.id_rol == 1 else 'success' if current_user.id_rol == 3 else 'secondary' }} ms-1">
+                                    {{ current_user.rol.nombre }}
+                                </span>
+                            </span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>

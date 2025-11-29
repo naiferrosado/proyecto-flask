@@ -10,17 +10,12 @@ block content %}
           <!-- AVATAR IMPLEMENTADO -->
           <div class="mb-3">
             {% if usuario.avatar %}
-            <img
-              src="{{ url_for('static', filename='uploads/avatars/' ~ usuario.avatar) }}"
-              class="rounded-circle shadow-sm"
-              style="width: 120px; height: 120px; object-fit: cover"
-            />
+            <img src="{{ url_for('static', filename='uploads/avatars/' ~ usuario.avatar) }}"
+              class="rounded-circle shadow-sm" style="width: 120px; height: 120px; object-fit: cover" />
             {% else %}
             <img
               src="https://ui-avatars.com/api/?name={{ (usuario.nombre ~ ' ' ~ usuario.apellido)|urlencode }}&background=random&rounded=true&size=128"
-              class="rounded-circle shadow-sm"
-              style="width: 120px; height: 120px; object-fit: cover"
-            />
+              class="rounded-circle shadow-sm" style="width: 120px; height: 120px; object-fit: cover" />
             {% endif %}
           </div>
 
@@ -28,10 +23,7 @@ block content %}
           <p class="text-muted small mb-3">{{ usuario.correo }}</p>
 
           <div class="d-grid gap-2">
-            <a
-              href="{{ url_for('usuarios.editar_perfil') }}"
-              class="btn btn-outline-primary fw-bold rounded-pill px-4"
-            >
+            <a href="{{ url_for('usuarios.editar_perfil') }}" class="btn btn-outline-primary fw-bold rounded-pill px-4">
               <i class="fa-solid fa-pen me-2"></i> Editar Perfil
             </a>
           </div>
@@ -39,13 +31,11 @@ block content %}
       </div>
 
       <!-- Estadísticas Detalladas -->
+      {% if current_user.id_rol == 3 %}
       <div class="card border-0 rounded-4 shadow-sm">
         <div class="card-header bg-white border-0 pb-0">
           <h5 class="fw-bold mb-0">
-            <i
-              class="fa-solid fa-chart-simple me-2"
-              style="color: var(--bs-primary)"
-            ></i>
+            <i class="fa-solid fa-chart-simple me-2" style="color: var(--bs-primary)"></i>
             Mis Estadísticas
           </h5>
         </div>
@@ -72,6 +62,7 @@ block content %}
           </div>
         </div>
       </div>
+      {% endif %}
     </div>
 
     <!-- Contenido Principal -->
@@ -80,10 +71,7 @@ block content %}
       <div class="card border-0 rounded-4 shadow-lg mb-4">
         <div class="card-header bg-white border-0 pb-0">
           <h5 class="fw-bold mb-0">
-            <i
-              class="fa-solid fa-address-card me-2"
-              style="color: var(--bs-primary)"
-            ></i>
+            <i class="fa-solid fa-address-card me-2" style="color: var(--bs-primary)"></i>
             Datos Generales
           </h5>
         </div>
@@ -116,21 +104,14 @@ block content %}
       </div>
 
       <!-- Bloque: Objetos Publicados -->
+      {% if current_user.id_rol == 3 %}
       <div class="card border-0 rounded-4 shadow-lg mb-4">
-        <div
-          class="card-header bg-white border-0 d-flex justify-content-between align-items-center pb-0"
-        >
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pb-0">
           <h5 class="fw-bold mb-0">
-            <i
-              class="fa-solid fa-box-open me-2"
-              style="color: var(--bs-primary)"
-            ></i>
+            <i class="fa-solid fa-box-open me-2" style="color: var(--bs-primary)"></i>
             Mis Objetos Publicados
           </h5>
-          <a
-            href="{{ url_for('objetos.crear_objeto') }}"
-            class="btn btn-sm btn-main-action fw-bold rounded-pill"
-          >
+          <a href="{{ url_for('objetos.crear_objeto') }}" class="btn btn-sm btn-main-action fw-bold rounded-pill">
             <i class="fa-solid fa-plus me-1"></i> Nuevo
           </a>
         </div>
@@ -152,18 +133,11 @@ block content %}
                 <tr>
                   <td>
                     <div class="d-flex align-items-center">
-                      <img
-                        src="{{ objeto.imagen or 'https://placehold.co/50x50/f4f4f4/333333?text=IMG' }}"
-                        class="rounded-3 me-3"
-                        style="width: 50px; height: 50px; object-fit: cover"
-                      />
+                      <img src="{{ objeto.imagen or 'https://placehold.co/50x50/f4f4f4/333333?text=IMG' }}"
+                        class="rounded-3 me-3" style="width: 50px; height: 50px; object-fit: cover" />
                       <div>
-                        <strong class="text-dark d-block"
-                          >{{ objeto.nombre }}</strong
-                        >
-                        <small class="text-muted"
-                          >{{ objeto.categoria.nombre }}</small
-                        >
+                        <strong class="text-dark d-block">{{ objeto.nombre }}</strong>
+                        <small class="text-muted">{{ objeto.categoria.nombre }}</small>
                       </div>
                     </div>
                   </td>
@@ -172,19 +146,14 @@ block content %}
                   </td>
                   <td>
                     <span
-                      class="badge bg-{{ 'primary' if objeto.estado == 'Disponible' else 'warning' }} text-uppercase py-1 px-2"
-                    >
+                      class="badge bg-{{ 'primary' if objeto.estado == 'Disponible' else 'warning' }} text-uppercase py-1 px-2">
                       {{ objeto.estado }}
                     </span>
                   </td>
                   <td class="text-end">
-                    <a
-                      href="{{ url_for('objetos.detalle_objeto', id_objeto=objeto.id_objeto) }}"
-                      class="btn btn-sm btn-outline-secondary rounded-pill"
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="top"
-                      title="Ver Detalles"
-                    >
+                    <a href="{{ url_for('objetos.detalle_objeto', id_objeto=objeto.id_objeto) }}"
+                      class="btn btn-sm btn-outline-secondary rounded-pill" data-bs-toggle="tooltip"
+                      data-bs-placement="top" title="Ver Detalles">
                       <i class="fa-solid fa-eye"></i>
                     </a>
                   </td>
@@ -199,10 +168,7 @@ block content %}
             <p class="text-muted mt-3 mb-2">
               Aún no has publicado ningún objeto
             </p>
-            <a
-              href="{{ url_for('objetos.crear_objeto') }}"
-              class="btn btn-main-action fw-bold rounded-pill px-4"
-            >
+            <a href="{{ url_for('objetos.crear_objeto') }}" class="btn btn-main-action fw-bold rounded-pill px-4">
               <i class="fa-solid fa-circle-plus me-2"></i> Publicar Mi Primer
               Objeto
             </a>
@@ -210,6 +176,7 @@ block content %}
           {% endif %}
         </div>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>

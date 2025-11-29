@@ -12,6 +12,10 @@ reservas_bp = Blueprint("reservas", __name__)
 @reservas_bp.route("/")
 @login_required
 def listar_reservas():
+    if current_user.id_rol in [1, 3]:
+        flash("Los administradores y propietarios no tienen acceso a esta sección.", "danger")
+        return redirect(url_for("main.index"))
+    
     # Mostrar reservas del usuario actual
     reservas = Reserva.query.filter_by(id_usuario=current_user.id_usuario).all()
     return render_template("reservas/listar.html", reservas=reservas)
@@ -21,6 +25,12 @@ def listar_reservas():
 @login_required
 def crear_reserva(id_objeto):
     objeto = Objeto.query.get_or_404(id_objeto)
+    
+    # Restricción: Los propietarios no pueden reservar
+    if current_user.rol.nombre == 'Propietario':
+        flash("Los propietarios no pueden realizar reservas.", "error")
+        return redirect(url_for("objetos.detalle_objeto", id_objeto=id_objeto))
+
     form = ReservaForm()
 
     if form.validate_on_submit():

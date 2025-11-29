@@ -47,6 +47,10 @@ def listar_objetos():
 @objetos_bp.route("/nuevo", methods=["GET", "POST"])
 @login_required
 def crear_objeto():
+    if current_user.rol.nombre != 'Propietario':
+        flash("Solo los propietarios pueden publicar objetos.", "danger")
+        return redirect(url_for("main.index"))
+
     form = ObjetoForm()
     categorias = Categoria.query.all()
     form.id_categoria.choices = [(c.id_categoria, c.nombre) for c in categorias]
@@ -114,6 +118,10 @@ def detalle_objeto(id_objeto):
 @objetos_bp.route("/borradores")
 @login_required
 def ver_borradores():
+    if current_user.id_rol == 1:
+        flash("Los administradores no tienen acceso a esta sección.", "danger")
+        return redirect(url_for("main.index"))
+
     borradores = Objeto.query.filter_by(
         id_usuario=current_user.id_usuario,
         publicado=False

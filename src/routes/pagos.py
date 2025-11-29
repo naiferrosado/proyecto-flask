@@ -51,6 +51,10 @@ def procesar_pago(id_reserva):
 @pagos_bp.route("/historial")
 @login_required
 def historial_pagos():
+    if current_user.id_rol in [1, 3]:
+        flash("Los administradores y propietarios no tienen acceso a esta sección.", "danger")
+        return redirect(url_for("main.index"))
+
     pagos = (
         Pago.query.join(Reserva)
         .filter(Reserva.id_usuario == current_user.id_usuario)
