@@ -97,21 +97,49 @@ def usuarios():
     return render_template("admin/usuarios.html", usuarios=usuarios_paginados)
 
 
-@admin_bp.route("/usuarios/<int:id>/eliminar", methods=["POST"])
+@admin_bp.route("/usuarios/eliminar/<int:id>", methods=["POST"])
 @login_required
 @admin_required
 def eliminar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
 
-    if usuario.id_rol == 1:
-        flash("No se puede eliminar a un administrador.", "error")
-        return redirect(url_for("admin.usuarios"))
+    # Solo se elimina si está suspendido
+    if usuario.estado != "suspendido":
+        return jsonify({"ok": False, "msg": "Solo puedes eliminar usuarios suspendidos."}), 400
 
+    # Verificar reservas activas
+    reservas_activas = Reserva.query.filter_by(id_usuario=id, estado="activa").count()
+    if reservas_activas > 0:
+        return jsonify({"ok": False, "msg": "No se puede eliminar, tiene reservas activas."}), 400
+
+    # 🔥 Eliminar reservas NO activas
+    reservas_no_activas = Reserva.query.filter(
+        Reserva.id_usuario == id,
+        Reserva.estado != "activa"
+    ).all()
+
+    for reserva in reservas_no_activas:
+        db.session.delete(reserva)
+
+    # 🔥 Eliminar opiniones
+    for op in usuario.opiniones:
+        db.session.delete(op)
+
+    # 🔥 Eliminar incidencias
+    for inc in usuario.incidencias:
+        db.session.delete(inc)
+
+    # 🔥 Eliminar objetos
+    for obj in usuario.objetos:
+        db.session.delete(obj)
+
+    # 🔥 Finalmente eliminar usuario
     db.session.delete(usuario)
     db.session.commit()
 
-    flash(f"Usuario {usuario.nombre} eliminado correctamente.", "success")
-    return redirect(url_for("admin.usuarios"))
+    return jsonify({"ok": True, "msg": "Usuario eliminado correctamente."})
+
+
 
 
 @admin_bp.route("/usuarios/<int:id>")
@@ -140,6 +168,35 @@ def editar_usuario(id):
         return redirect(url_for("admin.usuarios"))
 
     return render_template("admin/editar_usuario.html", usuario=usuario)
+
+
+@admin_bp.route("/usuarios/suspender/<int:id>", methods=["POST"])
+@login_required
+@admin_required
+def suspender_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+
+    # No suspender administradores
+    if usuario.id_rol == 1:
+        return jsonify({"ok": False, "msg": "No se puede suspender un administrador."}), 400
+
+    usuario.estado = "suspendido"
+    db.session.commit()
+
+    return jsonify({"ok": True, "msg": "Usuario suspendido correctamente."})
+
+
+@admin_bp.route("/usuarios/activar/<int:id>", methods=["POST"])
+@login_required
+@admin_required
+def activar_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+
+    usuario.estado = "activo"
+    db.session.commit()
+
+    return jsonify({"ok": True, "msg": "Usuario activado correctamente."})
+
 
 
 # ------------------- CATEGORIAS -------------------

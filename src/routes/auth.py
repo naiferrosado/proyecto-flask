@@ -14,6 +14,13 @@ def login():
     if form.validate_on_submit():
         user = Usuario.query.filter_by(correo=form.correo.data).first()
         if user and user.check_password(form.contrasena.data):
+
+            # --- Verificación de usuario suspendido ---
+            if user.estado != "activo":
+                flash("Tu cuenta está suspendida. No puedes acceder.", "danger")
+                return redirect(url_for("auth.login"))
+            # -------------------------------------------
+
             login_user(user)
             flash("¡Inicio de sesión exitoso!", "success")
 
@@ -23,6 +30,7 @@ def login():
             flash("Correo o contraseña incorrectos", "error")
 
     return render_template("auth/login.html", form=form)
+
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
