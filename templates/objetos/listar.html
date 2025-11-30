@@ -27,6 +27,26 @@
     </div>
   </div>
 
+  <!-- Buscador -->
+  <div class="card border-0 rounded-4 shadow-sm mb-4 p-3">
+    <form action="{{ url_for('objetos.listar_objetos') }}" method="GET">
+      <div class="row g-3">
+        <div class="col-md-10">
+          <input type="text" class="form-control form-control-lg rounded-3"
+                placeholder="Buscar..." name="busqueda"
+                value="{{ request.args.get('busqueda', '') }}">
+        </div>
+
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold rounded-3">
+            <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
   <!-- Filtros -->
   <div class="card border-0 rounded-4 shadow-sm mb-5 p-3">
     <div class="card-body">

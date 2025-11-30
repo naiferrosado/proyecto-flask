@@ -25,10 +25,17 @@ objetos_bp = Blueprint("objetos", __name__)
 @objetos_bp.route("/")
 def listar_objetos():
     categoria_id = request.args.get("categoria")
+    busqueda = request.args.get("busqueda", "").strip()
+    
     query = Objeto.query.filter_by(estado="Disponible", publicado=True)
 
+    # Filtro por categoría
     if categoria_id:
         query = query.filter_by(id_categoria=categoria_id)
+
+    # Filtro por nombre (buscador)
+    if busqueda:
+        query = query.filter(Objeto.nombre.ilike(f"%{busqueda}%"))
 
     objetos = query.all()
     categorias = Categoria.query.all()
@@ -37,8 +44,10 @@ def listar_objetos():
         "objetos/listar.html", 
         objetos=objetos, 
         categorias=categorias,
-        categoria_seleccionada=categoria_id
+        categoria_seleccionada=categoria_id,
+        busqueda=busqueda
     )
+
 
 
 # -----------------------------
