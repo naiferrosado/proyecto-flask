@@ -134,11 +134,25 @@
                 {{ objeto.usuario.direccion.split(',')[0] if objeto.usuario.direccion else 'Ubicación no especificada'
                 }}
               </small>
-              <small class="d-flex align-items-center">
-                <img src="{{ url_for('static', filename='img/user_anonimo.png') }}" alt="Usuario"
-                  class="rounded-circle me-1" width="20" height="20" />
-                {{ objeto.usuario.nombre }}
-              </small>
+             <small class="d-flex align-items-center">
+              <img 
+                src="{% if objeto.usuario.avatar %}
+                        {% if objeto.usuario.avatar.startswith('http') %}
+                            {{ objeto.usuario.avatar }}
+                        {% else %}
+                            {{ url_for('static', filename='uploads/' ~ objeto.usuario.avatar) }}
+                        {% endif %}
+                    {% else %}
+                        {{ url_for('static', filename='img/user_anonimo.png') }}
+                    {% endif %}"
+                class="rounded-circle me-1"
+                width="20"
+                height="20"
+              >
+
+              {{ objeto.usuario.nombre }}
+            </small>
+
             </div>
           </div>
         </div>

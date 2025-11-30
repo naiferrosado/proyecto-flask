@@ -77,11 +77,18 @@
         >
           <div class="object-image-container position-relative">
             <img
-  src="{{ url_for('static', filename=objeto.imagen) if objeto.imagen else 'https://via.placeholder.com/400x300/e9ecef/495057?text=Rentflow' }}"
-  class="card-img-top"
-  alt="{{ objeto.nombre }}"
-  style="height: 200px; object-fit: cover; transition: transform 0.5s ease;"
-/>
+                src="
+                  {% if objeto.imagenes and objeto.imagenes|length > 0 %}
+                    {{ url_for('static', filename='uploads/' ~ objeto.imagenes[0].nombre_archivo.replace('\\', '/')) }}
+                  {% else %}
+                    https://placehold.co/400x300/e9ecef/495057?text=Sin+Imagen
+                  {% endif %}
+                "
+                class="card-img-top"
+                alt="{{ objeto.nombre }}"
+                style="height: 200px; object-fit: cover; transition: transform 0.5s ease;"
+            />
+
 
             <!-- Overlay de Estado -->
             <span
