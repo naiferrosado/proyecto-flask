@@ -99,8 +99,12 @@
       <div class="card object-card h-100 border-0 rounded-4 shadow-sm">
         <!-- Imagen -->
         <img
-          src="{% if objeto.imagen %}{{ url_for('static', filename=objeto.imagen) }}{% else %}https://placehold.co/400x250/f4f4f4/333333?text=Sin+Imagen{% endif %}"
-          class="card-img-top rounded-top-4" alt="{{ objeto.nombre }}" style="height: 200px; object-fit: cover;" />
+          src="{% if objeto.imagenes %}{{ url_for('static', filename='uploads/' ~ objeto.imagenes[0].nombre_archivo.replace('\\', '/')) }}{% else %}https://placehold.co/400x250/f4f4f4/333333?text=Sin+Imagen{% endif %}"
+          class="card-img-top rounded-top-4"
+          alt="{{ objeto.nombre }}"
+          style="height: 200px; object-fit: cover;"
+        />
+
 
         <!-- Cuerpo -->
         <div class="card-body d-flex flex-column">
