@@ -55,7 +55,7 @@
         <div class="card-body">
           <h5 class="card-title fw-bold">Usuarios Activos</h5>
           <p class="display-6 text-success">
-            {{ usuarios.items | length }}
+            {{ usuarios.items | selectattr('estado', 'equalto', 'activo') | list | length }}
           </p>
         </div>
       </div>
@@ -159,28 +159,66 @@
             </td>
 
             <td>
+              {% if usuario.estado == 'activo' %}
               <span class="badge bg-success">
                 <i class="bi bi-check-circle"></i> Activo
               </span>
-            </td>
-
-            <td class="text-center">
-              <a href="{{ url_for('admin.ver_usuario', id=usuario.id_usuario) }}"
-                class="btn btn-outline-primary btn-sm me-2">
-                <i class="fa-solid fa-eye"></i> Ver
-              </a>
-
-              <a href="{{ url_for('admin.editar_usuario', id=usuario.id_usuario) }}"
-                class="btn btn-warning btn-sm me-2">
-                <i class="fa-solid fa-pen-to-square"></i> Editar
-              </a>
-
-              {% if usuario.id_rol != 1 %}
-              <button class="btn btn-danger btn-sm" onclick="eliminarUsuario({{ usuario.id_usuario }})">
-                <i class="fa-solid fa-trash-can"></i> Eliminar
-              </button>
+              {% else %}
+              <span class="badge bg-danger">
+                <i class="bi bi-x-circle"></i> Suspendido
+              </span>
               {% endif %}
             </td>
+
+
+            <td class="text-center">
+
+                <!-- VER (siempre disponible) -->
+                <a href="{{ url_for('admin.ver_usuario', id=usuario.id_usuario) }}"
+                  class="btn btn-outline-primary btn-sm me-2">
+                    <i class="fa-solid fa-eye"></i> Ver
+                </a>
+
+                {% if usuario.id_usuario != current_user.id_usuario %}
+
+                    <!-- EDITAR (no se edita a sí mismo) -->
+                    <a href="{{ url_for('admin.editar_usuario', id=usuario.id_usuario) }}"
+                      class="btn btn-warning btn-sm me-2">
+                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                    </a>
+
+                    <!-- ACCIONES: suspender / activar / eliminar -->
+                    {% if usuario.id_rol != 1 %}  <!-- No permitir acciones sobre ADMIN -->
+
+                        {% if usuario.estado == 'activo' %}
+                            <!-- BOTÓN SUSPENDER -->
+                            <button class="btn btn-danger btn-sm"
+                                    onclick="suspenderUsuario({{ usuario.id_usuario }})">
+                                <i class="fa-solid fa-ban"></i> Suspender
+                            </button>
+
+                        {% elif usuario.estado == 'suspendido' %}
+                            <!-- BOTÓN ACTIVAR -->
+                            <button class="btn btn-success btn-sm"
+                                    onclick="activarUsuario({{ usuario.id_usuario }})">
+                                <i class="fa-solid fa-check-circle"></i> Activar
+                            </button>
+
+                            <!-- BOTÓN ELIMINAR (solo suspendidos) -->
+                            <button class="btn btn-dark btn-sm"
+                                    onclick="eliminarUsuario({{ usuario.id_usuario }})">
+                                <i class="fa-solid fa-trash-can"></i> Eliminar
+                            </button>
+
+                        {% endif %}
+
+                    {% endif %}
+
+                {% endif %}
+
+            </td>
+
+
           </tr>
           {% endfor %}
         </tbody>
@@ -216,30 +254,83 @@
   {% endif %}
 </div>
 
-<!-- MODAL ELIMINAR -->
-<div class="modal fade" id="eliminarModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title fw-bold">Eliminar Usuario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
 
-      <div class="modal-body">
-        <p>¿Estás seguro de que deseas eliminar este usuario?</p>
-        <p class="text-muted small">Esta acción es permanente.</p>
-      </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+<script>
+  // SUSPENDER USUARIO
+ function suspenderUsuario(id) {
+  Swal.fire({
+    title: "¿Suspender usuario?",
+    text: "El usuario no podrá acceder a la plataforma.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, suspender",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/admin/usuarios/suspender/${id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+          Swal.fire(data.msg, "", data.ok ? "success" : "error").then(() => {
+            if (data.ok) location.reload();
+          });
+        });
+    }
+  });
+}
 
-        <form method="POST" action="" id="eliminarForm">
-          <button type="submit" class="btn btn-danger">Eliminar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+// ACTIVAR USUARIO
+function activarUsuario(id) {
+  Swal.fire({
+    title: "¿Activar usuario?",
+    text: "El usuario podrá acceder nuevamente.",
+    icon: "info",
+    showCancelButton: true,
+    confirmButtonText: "Sí, activar",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/admin/usuarios/activar/${id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+          Swal.fire(data.msg, "", data.ok ? "success" : "error").then(() => {
+            if (data.ok) location.reload();
+          });
+        });
+    }
+  });
+}
+
+// ELIMINAR USUARIO
+function eliminarUsuario(id) {
+  Swal.fire({
+    title: "¿Eliminar usuario?",
+    text: "Esta acción es irreversible.",
+    icon: "error",
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/admin/usuarios/eliminar/${id}`, { method: "POST" })
+        .then(r => r.json().catch(() => ({}))) // para manejar errores HTTP
+        .then(data => {
+          if (!data.ok) {
+            Swal.fire(data.msg || "El usuario tiene una o mas reservas activas.", "", "error");
+          } else {
+            Swal.fire(data.msg, "", "success").then(() => location.reload());
+          }
+        })
+        .catch(() => {
+          Swal.fire("Error al conectar con el servidor.", "", "error");
+        });
+    }
+  });
+}
+
+</script>
+
 
 <script>
   function filtrarUsuarios() {
@@ -254,14 +345,7 @@
 
     window.location.href = window.location.pathname + "?" + params.toString();
   }
-
-  function eliminarUsuario(id) {
-    const modal = new bootstrap.Modal(document.getElementById("eliminarModal"));
-    const form = document.getElementById("eliminarForm");
-
-    form.action = "{{ url_for('admin.eliminar_usuario', id=0) }}".replace("0", id);
-    modal.show();
-  }
 </script>
+
 
 {% endblock %}

@@ -13,6 +13,7 @@ class Usuario(db.Model, UserMixin):
     contrasena = db.Column(db.String(255), nullable=False)  # Aumentado a 255
     telefono = db.Column(db.String(15), nullable=False)
     direccion = db.Column(db.String(100), nullable=False)
+    estado = db.Column(db.String(20), nullable=False, default="activo")
     fecha_registro = db.Column(db.Date, nullable=False)
     id_rol = db.Column(
         db.Integer, db.ForeignKey("rol.id_rol"), nullable=False, default=2
