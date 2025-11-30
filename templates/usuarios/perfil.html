@@ -23,10 +23,26 @@ block content %}
           <p class="text-muted small mb-3">{{ usuario.correo }}</p>
 
           <div class="d-grid gap-2">
-            <a href="{{ url_for('usuarios.editar_perfil') }}" class="btn btn-outline-primary fw-bold rounded-pill px-4">
-              <i class="fa-solid fa-pen me-2"></i> Editar Perfil
-            </a>
-          </div>
+    <a href="{{ url_for('usuarios.editar_perfil') }}" class="btn btn-outline-primary fw-bold rounded-pill px-4">
+        <i class="fa-solid fa-pen me-2"></i> Editar Perfil
+    </a>
+
+    <!-- 🔥 Botón dinámico de cambio de rol -->
+    {% if current_user.id_rol in [2, 3] %}
+        <form action="{{ url_for('usuarios.cambiar_rol') }}" method="POST">
+            <button type="submit" class="btn btn-outline-secondary fw-bold rounded-pill px-4">
+                <i class="fa-solid fa-arrows-rotate me-2"></i>
+
+                {% if current_user.id_rol == 2 %}
+                    Ver como Propietario
+                {% else %}
+                    Ver como Cliente
+                {% endif %}
+            </button>
+        </form>
+    {% endif %}
+</div>
+
         </div>
       </div>
 
