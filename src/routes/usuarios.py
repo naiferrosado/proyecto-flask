@@ -117,3 +117,21 @@ def verificar_contrasena():
     contrasena = request.form.get("contrasena", "")
     valid = current_user.check_password(contrasena)
     return jsonify({"valid": bool(valid)})
+
+@usuarios_bp.route("/cambiar_rol", methods=["POST"])
+@login_required
+def cambiar_rol():
+    # Evitar que el Admin cambie su rol
+    if current_user.id_rol == 1:
+        flash("Los administradores no pueden cambiar de rol.", "danger")
+        return redirect(url_for("usuarios.mi_perfil"))
+
+    # Alternar entre cliente (2) y propietario (3)
+    nuevo_rol = 3 if current_user.id_rol == 2 else 2
+
+    current_user.id_rol = nuevo_rol
+    db.session.commit()
+
+    flash("Tu rol ha sido actualizado correctamente.", "success")
+    return redirect(url_for("usuarios.perfil"))
+

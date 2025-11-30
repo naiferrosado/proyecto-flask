@@ -27,8 +27,13 @@ def init_roles():
             ),
             Rol(
                 id_rol=2,
-                nombre="Usuario",
-                descripcion="Puede publicar objetos para alquilar y también alquilar objetos de otros usuarios",
+                nombre="Cliente",
+                descripcion="Puede alquilar objetos de otros usuarios",
+            ),
+            Rol(
+                id_rol=3,
+                nombre="Propietario",
+                descripcion="Puede publicar objetos para alquilarse",
             ),
         ]
 
