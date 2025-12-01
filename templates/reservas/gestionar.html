@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block title %}Gestionar Reservas{% endblock %} {%
+block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Gestionar Solicitudes de Reserva</h2>
+
+  {% if reservas %}
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Objeto</th>
+          <th>Cliente</th>
+          <th>Fechas</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reserva in reservas %}
+        <tr>
+          <td>{{ reserva.id_reserva }}</td>
+          <td>{{ reserva.objeto.nombre }}</td>
+          <td>{{ reserva.usuario.nombre }} {{ reserva.usuario.apellido }}</td>
+          <td>{{ reserva.fecha_inicio }} - {{ reserva.fecha_fin }}</td>
+          <td>
+            <span class="badge bg-warning text-dark">{{ reserva.estado }}</span>
+          </td>
+          <td>
+            <div class="btn-group" role="group">
+              <a
+                href="{{ url_for('reservas.aprobar_reserva', id=reserva.id_reserva) }}"
+                class="btn btn-success btn-sm"
+                onclick="return confirm('¿Estás seguro de aceptar esta reserva?')"
+              >
+                <i class="fas fa-check"></i> Aceptar
+              </a>
+              <a
+                href="{{ url_for('reservas.rechazar_reserva', id=reserva.id_reserva) }}"
+                class="btn btn-danger btn-sm"
+                onclick="return confirm('¿Estás seguro de rechazar esta reserva?')"
+              >
+                <i class="fas fa-times"></i> Rechazar
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    No tienes solicitudes de reserva pendientes.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
