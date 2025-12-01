@@ -19,6 +19,11 @@ def procesar_pago(id_reserva):
         flash("No tienes permisos para pagar esta reserva", "error")
         return redirect(url_for("reservas.listar_reservas"))
 
+    # Validar que la reserva haya sido aceptada por el propietario
+    if reserva.estado != "Aceptada":
+        flash("La reserva debe ser aceptada por el propietario antes de realizar el pago.", "warning")
+        return redirect(url_for("reservas.listar_reservas"))
+
     form = PagoForm()
 
     # Calcular el monto siempre (para mostrarlo)

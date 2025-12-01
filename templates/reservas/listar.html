@@ -90,19 +90,17 @@
 
               <!-- Acciones -->
               <td class="text-end">
-                {% if reserva.estado == 'Pendiente' %}
-
-                <!-- Botón Pagar -->
+                {% if reserva.estado == 'Aceptada' %}
+                <!-- Botón Pagar (Solo si está aceptada) -->
                 <a
                   href="{{ url_for('pagos.procesar_pago', id_reserva=reserva.id_reserva) }}"
                   class="btn btn-sm btn-success rounded-pill me-2"
                   data-bs-toggle="tooltip"
                   title="Realizar Pago"
                 >
-                  <i class="fa-solid fa-credit-card"></i>
+                  <i class="fa-solid fa-credit-card"></i> Pagar
                 </a>
 
-                <!-- Botón Cancelar -->
                 <a
                   href="{{ url_for('reservas.cancelar_reserva', id=reserva.id_reserva) }}"
                   class="btn btn-sm btn-outline-danger rounded-pill"
@@ -112,23 +110,29 @@
                   <i class="fa-solid fa-times"></i>
                 </a>
 
-                {% elif reserva.estado == 'Confirmada' or reserva.estado ==
-                'Activa' %}
-
-                <span class="text-muted small me-2 fw-bold text-success">
-                  Pagado ✓
+                {% elif reserva.estado == 'Pendiente' %}
+                <span class="badge bg-warning text-dark me-2">
+                  <i class="fa-solid fa-clock"></i> Esperando
                 </span>
-
                 <a
                   href="{{ url_for('reservas.cancelar_reserva', id=reserva.id_reserva) }}"
                   class="btn btn-sm btn-outline-danger rounded-pill"
+                  data-bs-toggle="tooltip"
                   title="Cancelar Reserva"
                 >
                   <i class="fa-solid fa-times"></i>
                 </a>
 
+                {% elif reserva.estado == 'Confirmada' or reserva.estado == 'Activa' %}
+                <span class="text-muted small me-2 fw-bold text-success">
+                  Pagado <i class="fa-solid fa-check"></i>
+                </span>
+
+                {% elif reserva.estado == 'Rechazada' %}
+                <span class="text-danger small fw-bold">Rechazada</span>
+
                 {% else %}
-                <span class="text-muted small">Finalizado</span>
+                <span class="text-muted small">Cancelada</span>
                 {% endif %}
               </td>
             </tr>
