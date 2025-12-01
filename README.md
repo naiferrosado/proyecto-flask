@@ -1,194 +1,139 @@
-# proyecto-flask
+# 🏗️ Rentflow
 
-🏗️ Rentflow - Plataforma de Alquiler de Objetos
-Rentflow es una plataforma web que conecta a personas que tienen objetos con quienes los necesitan temporalmente, promoviendo la economía circular y el consumo responsable en la República Dominicana.
+> **Plataforma de Alquiler de Objetos - Economía Circular en República Dominicana**
 
-🚀 Características Principales
-🔐 Autenticación y Usuarios
-Registro e inicio de sesión seguro
+![Rentflow Banner](https://via.placeholder.com/1000x300?text=Rentflow+Banner) _<!-- Puedes reemplazar esto con una imagen real luego -->_
 
-Sistema unificado de roles: Los usuarios pueden publicar y alquilar objetos
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1.2-black?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-12%2B-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
 
-Perfiles de usuario con reputación y calificaciones
+---
 
-Panel de administración para moderación
+## 📖 Descripción
 
-# 🛍️ Gestión de Objetos
+**Rentflow** es una solución innovadora diseñada para conectar a personas que tienen objetos subutilizados con aquellas que los necesitan temporalmente. Nuestra misión es promover el consumo responsable y la economía circular, facilitando el alquiler seguro y eficiente de todo tipo de artículos.
 
-Publicación de objetos para alquiler
+## 🚀 Características Principales
 
-Búsqueda avanzada con filtros por categoría, precio y ubicación
+### � Gestión de Usuarios
 
-Galería de imágenes para cada objeto
+- **Roles Diferenciados**:
+  - 🛠️ **Administrador**: Control total del sistema, gestión de usuarios y moderación.
+  - 🛍️ **Cliente**: Busca y alquila objetos.
+  - 🏠 **Propietario**: Publica objetos y gestiona sus alquileres.
+- **Seguridad**: Autenticación robusta y protección de rutas.
+- **Perfiles**: Historial de reservas, pagos y reputación.
 
-Sistema de estados: Disponible, Reservado, No disponible
+### � Gestión de Objetos
 
-# 📅 Sistema de Reservas
+- **Publicación Sencilla**: Sube fotos y detalles de tus objetos.
+- **Búsqueda Avanzada**: Filtros por categoría, precio y disponibilidad.
+- **Galería de Imágenes**: Visualización atractiva de los productos.
+- **Estados en Tiempo Real**: Disponible, Reservado, No disponible.
 
-Calendario de disponibilidad para cada objeto
+### 📅 Reservas y Pagos
 
-Gestión de reservas con estados: Pendiente, Confirmada, Cancelada, Finalizada
+- **Flujo de Reserva**: Solicitud -> Confirmación -> Pago -> Finalización.
+- **Generación de Reportes**: Exportación de comprobantes en PDF (usando `xhtml2pdf`).
+- **Historial de Transacciones**: Registro detallado de pagos y reservas.
 
-Cálculo automático de costos basado en días de alquiler
+## 🛠️ Stack Tecnológico
 
-# 💰 Pagos y Reputación
+| Componente        | Tecnología                 | Descripción                          |
+| ----------------- | -------------------------- | ------------------------------------ |
+| **Backend**       | Python / Flask             | Lógica del servidor y API.           |
+| **ORM**           | SQLAlchemy                 | Gestión de base de datos relacional. |
+| **Base de Datos** | PostgreSQL                 | Almacenamiento robusto y escalable.  |
+| **Frontend**      | HTML5 / CSS3 / Bootstrap 5 | Diseño responsivo y moderno.         |
+| **Plantillas**    | Jinja2                     | Renderizado dinámico de vistas.      |
+| **Reportes**      | xhtml2pdf                  | Generación de documentos PDF.        |
 
-Sistema de pagos integrado (simulado)
+## ⚙️ Instalación y Configuración
 
-Sistema de opiniones y calificaciones (1-5 estrellas)
+Sigue estos pasos para levantar el proyecto en tu entorno local:
 
-Reputación de usuarios basada en transacciones
+### 1. Prerrequisitos
 
-# 🛠️ Administración
+- Python 3.8+
+- PostgreSQL
+- Git
 
-Gestión de usuarios y verificación
+### 2. Clonar el Repositorio
 
-Moderación de contenido (objetos, opiniones)
-
-Gestión de categorías
-
-Resolución de incidencias
-
-# 🛠️ Tecnologías Utilizadas
-
-# Backend
-
-Python 3.8+ con Flask framework
-
-Flask-SQLAlchemy para ORM de base de datos
-
-Flask-Migrate para migraciones de BD
-
-Flask-Login para autenticación
-
-Flask-WTF para formularios seguros
-
-PostgreSQL como base de datos principal
-
-# Frontend
-
-Bootstrap 5.1.3 para diseño responsive
-
-Bootstrap Icons para iconografía
-
-HTML5 + CSS3 con personalizaciones
-
-Jinja2 para templates
-
-Desarrollo y Despliegue
-Git para control de versiones
-
-Render/Railway para despliegue
-
-Python-dotenv para variables de entorno
-
-# 📦 Instalación y Configuración
-
-Prerrequisitos
-
-Python 3.8 o superior
-
-PostgreSQL 12+
-
-Git
-
-1. Clonar el repositorio
-
+```bash
 git clone https://github.com/naiferrosado/rentflow.git
 cd rentflow
+```
 
-2. Configurar entorno virtual
+### 3. Configurar Entorno Virtual
 
+```bash
 # Windows
-
 python -m venv .venv
 .venv\Scripts\activate
 
 # Linux/Mac
-
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
-3. Instalar dependencias
+### 4. Instalar Dependencias
 
+```bash
 pip install -r requirements.txt
+```
 
-4. Configurar variables de entorno
+### 5. Configurar Variables de Entorno
 
-Crear archivo .env en la raíz del proyecto:
+Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
-SECRET_KEY=tu_clave_secreta_muy_segura
+```env
+SECRET_KEY=tu_clave_secreta_super_segura
 DATABASE_URL=postgresql://usuario:password@localhost/rentflow
 FLASK_ENV=development
+```
 
-5. Configurar base de datos
+### 6. Inicializar Base de Datos
 
-# Inicializar migraciones
-
+```bash
 flask db init
-
-# Crear migración inicial
-
-flask db migrate -m "Initial migration"
-
-# Aplicar migraciones
-
+flask db migrate -m "Migración inicial"
 flask db upgrade
+```
 
-6. Ejecutar la aplicación
+### 7. Ejecutar la Aplicación
 
-# Desarrollo
-
-python app.py
-
-# O usando Flask
-
+```bash
 flask run
+```
 
-La aplicación estará disponible en http://localhost:5000
+Visita `http://localhost:5000` en tu navegador.
 
-# 👤 Roles del Sistema
+## 📂 Estructura del Proyecto
 
-# Usuario Regular
+```
+rentflow/
+├── app.py              # Punto de entrada de la aplicación
+├── config/             # Configuraciones
+├── models/             # Modelos de base de datos (SQLAlchemy)
+├── src/
+│   ├── forms/          # Formularios (WTForms)
+│   └── routes/         # Controladores y rutas
+├── static/             # Archivos estáticos (CSS, JS, Imágenes)
+├── templates/          # Plantillas HTML (Jinja2)
+├── migrations/         # Archivos de migración de base de datos
+└── requirements.txt    # Dependencias del proyecto
+```
 
-Publicar objetos para alquiler
+## 👥 Autores
 
-Alquilar objetos de otros usuarios
+- **Naifer A. Rosado**
+- **Ricardo Peña Garcia**
 
-Gestionar sus propias reservas
+---
 
-Calificar a otros usuarios
-
-# Administrador
-
-Todas las funciones de usuario regular
-
-Gestión completa de usuarios
-
-Moderación de contenido
-
-Gestión de categorías
-
-Resolución de incidencias
-
-# 🌟 Funcionalidades Futuras
-
-Integración con APIs de pago reales
-
-Sistema de mensajería entre usuarios
-
-App móvil nativa
-
-Sistema de notificaciones push
-
-Geolocalización avanzada con mapas
-
-Análisis de datos y reportes
-
-Sistema de seguros para objetos
-
-# 👥 Autores
-
-Naifer A. Rosado
-
-Ricardo Peña Garcia
+<div align="center">
+  <sub>Hecho con ❤️ en República Dominicana</sub>
+</div>
